@@ -1249,8 +1249,7 @@ canvas {
 
 #graphCanvas {
     width: 100%;
-    height: auto;
-    min-height: 260px;
+    height: 540px;
     display: block;
 }
 
@@ -1295,8 +1294,7 @@ canvas {
 
     #graphCanvas {
         width: 100%;
-        height: auto;
-        min-height: 220px;
+        height: 540px;
     }
 
 }

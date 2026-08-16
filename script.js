@@ -260,6 +260,51 @@ let graphHeight = 0;
 
 
 /* =========================================================
+   8. SHARED VISUAL AMPLITUDE
+========================================================= */
+
+/*
+   A single pixels-per-unit scale keeps circular motion,
+   vertical SHM, and the displacement graph synchronized.
+*/
+function getSharedAmplitudeScale() {
+
+    const squareAvailable =
+        Math.min(
+            circularHeight,
+            shmHeight
+        ) * 0.42;
+
+    const graphAvailable =
+        graphHeight * 0.48;
+
+    const maximumVisualAmplitude =
+        Math.min(
+            squareAvailable,
+            graphAvailable
+        );
+
+    return (
+        MAX_AMPLITUDE > 0
+            ? maximumVisualAmplitude /
+              MAX_AMPLITUDE
+            : 1
+    );
+
+}
+
+
+function getSharedVisualAmplitude() {
+
+    return (
+        state.amplitude *
+        getSharedAmplitudeScale()
+    );
+
+}
+
+
+/* =========================================================
    8. NUMBER FORMAT
 ========================================================= */
 
@@ -462,17 +507,30 @@ function calculateMotion() {
 
 function getDisplayTheta() {
 
-    let theta =
-        state.theta % TWO_PI;
+    /*
+       x = A cos(theta)
+       y = A sin(theta)
 
-    if (
-        theta < 0
-    ) {
+       atan2(y, x) gives the angle measured
+       anticlockwise from the +x axis.
+    */
+
+    let theta =
+        Math.atan2(
+            state.y,
+            state.x
+        );
+
+    /*
+       Convert negative angles into
+       the equivalent 0–360° range.
+    */
+
+    if (theta < 0) {
         theta += TWO_PI;
     }
 
     return theta;
-
 }
 
 
@@ -1240,13 +1298,7 @@ function drawCircularMotion() {
     ----------------------------------------------------- */
 
     const radius =
-        Math.min(
-            state.amplitude,
-            Math.min(
-                circularWidth,
-                circularHeight
-            ) * 0.42
-        );
+        getSharedVisualAmplitude();
 
 
     /*
@@ -1396,16 +1448,74 @@ function drawCircularMotion() {
 
 
     /* =====================================================
-       RADIUS LABEL
+    RADIUS LABEL — FOLLOWS RADIUS
     ===================================================== */
+
+    /*
+    The label is positioned along the
+    SAME radius vector as the red arrow.
+
+    Because canvas Y is inverted, use:
+
+       centerY - circularY
+
+    instead of:
+
+       centerY + circularY
+    */
 
     const radiusLabelX =
         centerX +
         circularX * 0.55;
 
     const radiusLabelY =
-        centerY +
+        centerY -
         circularY * 0.55;
+
+
+    /*
+    Small perpendicular offset so the
+    label does not sit directly on the
+    radius line.
+    */
+
+    const radiusLength =
+        Math.sqrt(
+            circularX * circularX +
+            circularY * circularY
+        );
+
+
+    let labelOffsetX = 0;
+    let labelOffsetY = -10;
+
+
+    if (
+        radiusLength > 0
+    ) {
+
+        /*
+        Perpendicular unit vector.
+
+           (-dy, dx)
+        */
+
+        const perpendicularX =
+            -circularY /
+            radiusLength;
+
+        const perpendicularY =
+            -circularX /
+            radiusLength;
+
+
+        labelOffsetX =
+            perpendicularX * 10;
+
+        labelOffsetY =
+            perpendicularY * 10;
+
+    }
 
 
     circularCtx.save();
@@ -1419,14 +1529,19 @@ function drawCircularMotion() {
     circularCtx.textAlign =
         "center";
 
+    circularCtx.textBaseline =
+        "middle";
+
+
     circularCtx.fillText(
         `A = ${formatNumber(
             state.amplitude,
             0
         )}`,
-        radiusLabelX,
-        radiusLabelY - 8
+        radiusLabelX + labelOffsetX,
+        radiusLabelY + labelOffsetY
     );
+
 
     circularCtx.restore();
 
@@ -1636,81 +1751,84 @@ function drawCircularMotion() {
 
 
     /* =====================================================
-       ANGLE ARC
+    ANGLE ARC
     ===================================================== */
 
-    if (
-        radius > 20
-    ) {
+    const displayTheta =
+        getDisplayTheta();
 
-        const displayTheta =
-            getDisplayTheta();
-
-
-        circularCtx.save();
-
-        circularCtx.beginPath();
-
-
-        /*
-           Canvas Y direction is downward,
-           therefore physical positive θ
-           is represented using -θ.
-        */
-
-        circularCtx.arc(
-            centerX,
-            centerY,
-            Math.min(
-                38,
-                radius * 0.35
-            ),
-            0,
-            -displayTheta,
-            false
+    const arcRadius =
+        Math.min(
+            42,
+            radius * 0.35
         );
 
 
-        circularCtx.strokeStyle =
-            "#7c3aed";
+    circularCtx.save();
 
-        circularCtx.lineWidth =
-            2;
+    circularCtx.beginPath();
 
-        circularCtx.stroke();
+    circularCtx.arc(
+        centerX,
+        centerY,
+        arcRadius,
+        0,
+        -displayTheta,
+        true
+    );
 
-        circularCtx.restore();
+    circularCtx.strokeStyle =
+        "#7c3aed";
 
+    circularCtx.lineWidth =
+        3;
 
-        /* -------------------------------------------------
-           Angle label
-        ------------------------------------------------- */
+    circularCtx.stroke();
 
-        circularCtx.save();
-
-        circularCtx.fillStyle =
-            "#7c3aed";
-
-        circularCtx.font =
-            "bold 12px Arial";
-
-        circularCtx.textAlign =
-            "center";
+    circularCtx.restore();
 
 
-        circularCtx.fillText(
-            `θ = ${formatAngle(
-                displayTheta
-            )}`,
-            centerX + 48,
-            centerY - 22
-        );
+    /* =====================================================
+    ANGLE LABEL — FIXED IN FIRST QUADRANT
+    ===================================================== */
+
+    /*
+    Keep the angle text in a fixed position
+    in the first quadrant.
+
+    It does NOT rotate with the radius.
+    The numerical θ value still updates live.
+    */
+
+    const angleLabelX =
+        centerX + 55;
+
+    const angleLabelY =
+        centerY - 55;
 
 
-        circularCtx.restore();
+    circularCtx.save();
 
-    }
+    circularCtx.fillStyle =
+        "#7c3aed";
 
+    circularCtx.font =
+        "bold 13px Arial";
+
+    circularCtx.textAlign =
+        "center";
+
+    circularCtx.textBaseline =
+        "middle";
+
+
+    circularCtx.fillText(
+        `θ = ${formatAngle(displayTheta)}`,
+        angleLabelX,
+        angleLabelY
+    );
+
+    circularCtx.restore();
 
     /* =====================================================
        AXIS LABELS
@@ -1915,34 +2033,30 @@ function drawSHM() {
 
 
     /* =====================================================
-       SHM AMPLITUDE SCALE
+        SHM AMPLITUDE SCALE — FIXED
     ===================================================== */
 
     /*
-       Use the same visual scaling concept
-       as the circular motion.
+    The physical amplitude A must produce a
+    proportional visual height.
 
-       This means increasing A visibly
-       increases the SHM range.
+    Slider:
+       A = 50 → smaller SHM height
+       A = 100 → medium SHM height
+       A = 150 → larger SHM height
+
+    Do NOT divide maxRadius by A,
+    because that would cancel the amplitude.
     */
 
-    const maxRadius =
-        Math.min(
-            shmWidth,
-            shmHeight
-        ) * 0.42;
+    const visualAmplitude =
+        getSharedVisualAmplitude();
 
-
-    const shmScale =
+    const visualScale =
         state.amplitude !== 0
-            ? maxRadius /
+            ? visualAmplitude /
               state.amplitude
             : 1;
-
-
-    const visualAmplitude =
-        state.amplitude *
-        shmScale;
 
 
     /* =====================================================
@@ -2057,7 +2171,7 @@ function drawSHM() {
     const currentY =
         centerY -
         state.y *
-        shmScale;
+        visualScale;
 
 
     /* =====================================================
@@ -2265,15 +2379,25 @@ function drawMotionDiagrams() {
 
 /* =========================================================
    24. GRAPH AREA
+   ALIGNED WITH CIRCULAR MOTION + VERTICAL SHM
 ========================================================= */
 
 function getGraphArea() {
 
     /*
-       Leave space for:
-       - title
-       - y-axis labels
-       - x-axis labels
+       The circular-motion and Vertical SHM
+       canvases are square.
+
+       Their x-axis is exactly at:
+
+           canvas height / 2
+
+       The graph canvas is wider and therefore
+       has a different height.
+
+       To make all three x-axes visually align,
+       use the SAME vertical screen position
+       as the square simulations.
     */
 
     const left =
@@ -2282,11 +2406,87 @@ function getGraphArea() {
     const right =
         graphWidth - 20;
 
+
+    /*
+       Keep enough room for graph labels.
+    */
+
     const top =
-        45;
+        35;
 
     const bottom =
-        graphHeight - 45;
+        graphHeight - 35;
+
+
+    /*
+       IMPORTANT:
+
+       Use the square simulation's centre
+       as the graph's zero line.
+
+       Circular motion:
+           centerY = circularHeight / 2
+
+       Vertical SHM:
+           centerY = shmHeight / 2
+
+       Use their average so both remain
+       perfectly synchronized.
+    */
+
+    let referenceAxisY;
+
+
+    if (
+        circularHeight > 0 &&
+        shmHeight > 0
+    ) {
+
+        referenceAxisY =
+            (
+                circularHeight / 2 +
+                shmHeight / 2
+            ) / 2;
+
+    } else if (
+        circularHeight > 0
+    ) {
+
+        referenceAxisY =
+            circularHeight / 2;
+
+    } else if (
+        shmHeight > 0
+    ) {
+
+        referenceAxisY =
+            shmHeight / 2;
+
+    } else {
+
+        /*
+           Fallback.
+        */
+
+        referenceAxisY =
+            graphHeight / 2;
+
+    }
+
+
+    /*
+       Make sure the axis remains inside
+       the graph canvas.
+    */
+
+    const zeroY =
+        Math.max(
+            top + 20,
+            Math.min(
+                bottom - 20,
+                referenceAxisY
+            )
+        );
 
 
     return {
@@ -2306,16 +2506,10 @@ function getGraphArea() {
             bottom - top,
 
         /*
-           ZERO LINE
-
-           Exactly halfway vertically.
+           SHARED x-axis position
         */
 
-        zeroY:
-            top +
-            (
-                bottom - top
-            ) / 2
+        zeroY: zeroY
 
     };
 
@@ -2331,61 +2525,12 @@ function getGraphVisualAmplitude(
 ) {
 
     /*
-       IMPORTANT:
-
-       The graph must visibly change height
-       when A changes.
-
-       Therefore the amplitude is mapped
-       directly into the available graph height.
+       Do not introduce a graph-specific scale.
+       This must match the circular-motion radius and
+       Vertical SHM maximum displacement exactly.
     */
 
-    const maximumVisualAmplitude =
-        area.height * 0.40;
-
-
-    const amplitudeRange =
-        MAX_AMPLITUDE -
-        MIN_AMPLITUDE;
-
-
-    if (
-        amplitudeRange <= 0
-    ) {
-
-        return maximumVisualAmplitude;
-
-    }
-
-
-    /*
-       Normalize A between 0 and 1.
-    */
-
-    const normalized =
-        (
-            state.amplitude -
-            MIN_AMPLITUDE
-        ) /
-        amplitudeRange;
-
-
-    /*
-       Keep some minimum visible height.
-    */
-
-    const minimumVisualAmplitude =
-        area.height * 0.15;
-
-
-    return (
-        minimumVisualAmplitude +
-        normalized *
-        (
-            maximumVisualAmplitude -
-            minimumVisualAmplitude
-        )
-    );
+    return getSharedVisualAmplitude();
 
 }
 
@@ -4346,6 +4491,91 @@ function setupControls() {
         );
 
     }
+
+
+    /*
+       COLLAPSIBLE INFORMATION PANELS
+    */
+
+    const formulaToggle =
+        document.getElementById("formulaToggle");
+
+    const formulaContent =
+        document.getElementById("formulaContent");
+
+    const formulaArrow =
+        document.getElementById("formulaArrow");
+
+    const conceptToggle =
+        document.getElementById("conceptToggle");
+
+    const conceptContent =
+        document.getElementById("conceptContent");
+
+    const conceptArrow =
+        document.getElementById("conceptArrow");
+
+
+    function setupCollapsiblePanel(
+        toggle,
+        content,
+        arrow
+    ) {
+
+        if (
+            !toggle ||
+            !content
+        ) {
+
+            return;
+
+        }
+
+
+        toggle.addEventListener(
+            "click",
+            function() {
+
+                content.classList.toggle(
+                    "open"
+                );
+
+                const isOpen =
+                    content.classList.contains(
+                        "open"
+                    );
+
+                toggle.setAttribute(
+                    "aria-expanded",
+                    String(isOpen)
+                );
+
+                if (arrow) {
+
+                    arrow.textContent =
+                        isOpen
+                            ? "▲"
+                            : "▼";
+
+                }
+
+            }
+        );
+
+    }
+
+
+    setupCollapsiblePanel(
+        formulaToggle,
+        formulaContent,
+        formulaArrow
+    );
+
+    setupCollapsiblePanel(
+        conceptToggle,
+        conceptContent,
+        conceptArrow
+    );
 
 
     /*
