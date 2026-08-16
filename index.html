@@ -1,396 +1,754 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-  <title>Circular Motion → Simple Harmonic Motion</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-  <link rel="stylesheet" href="style.css">
+    <meta
+        name="description"
+        content="Interactive simulation showing how the Y-component of uniform circular motion produces simple harmonic motion."
+    >
+
+    <title>
+        Circular Motion → Simple Harmonic Motion
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
+
 
 <body>
 
-  <div class="app">
+<div class="app">
 
-    <!-- =========================================================
+    <!-- =====================================================
          HEADER
-    ========================================================== -->
-    <header class="header">
-      <div>
-        <h1>Circular Motion → SHM</h1>
-        <p>Using the <strong>Y-component</strong> of uniform circular motion</p>
-      </div>
+    ====================================================== -->
 
-      <div class="formula-header">
-        <span>y = A sin(ωt)</span>
-      </div>
+    <header class="header">
+
+        <div>
+
+            <h1>
+                Circular Motion → SHM
+            </h1>
+
+            <p>
+                Using the
+                <strong>Y-component</strong>
+                of uniform circular motion
+            </p>
+
+        </div>
+
+
+        <div class="formula-header">
+
+            <span>
+                y = A sin(ωt)
+            </span>
+
+        </div>
+
     </header>
 
 
-    <!-- =========================================================
+
+    <!-- =====================================================
          MAIN CONTENT
-    ========================================================== -->
+    ====================================================== -->
+
     <main class="main-layout">
 
-      <!-- =======================================================
-           LEFT: CIRCULAR MOTION
-      ======================================================== -->
-      <section class="panel simulation-panel">
 
-        <div class="panel-title">
-          <h2>1. Uniform Circular Motion</h2>
-          <span class="status" id="simulationStatus">Paused</span>
-        </div>
+        <!-- =================================================
+             1. CIRCULAR MOTION
+        ================================================== -->
 
-        <div class="canvas-wrapper">
-          <canvas id="circularCanvas"></canvas>
-        </div>
+        <section
+            class="panel simulation-panel"
+        >
 
-        <div class="diagram-info">
+            <div class="panel-title">
 
-          <div class="info-item">
-            <span class="info-label">Amplitude</span>
-            <strong id="amplitudeDisplay">100 px</strong>
-          </div>
+                <h2>
+                    1. Uniform Circular Motion
+                </h2>
 
-          <div class="info-item">
-            <span class="info-label">Phase angle</span>
-            <strong id="angleDisplay">0°</strong>
-          </div>
+                <span
+                    class="status"
+                    id="simulationStatus"
+                >
+                    Paused
+                </span>
 
-          <div class="info-item">
-            <span class="info-label">Y displacement</span>
-            <strong id="yDisplay">0 px</strong>
-          </div>
-
-        </div>
-
-      </section>
+            </div>
 
 
-      <!-- =======================================================
-           MIDDLE: SHM
-      ======================================================== -->
-      <section class="panel simulation-panel">
+            <div class="canvas-wrapper">
 
-        <div class="panel-title">
-          <h2>2. Vertical SHM</h2>
-        </div>
+                <canvas
+                    id="circularCanvas"
+                ></canvas>
 
-        <div class="canvas-wrapper">
-          <canvas id="shmCanvas"></canvas>
-        </div>
-
-        <div class="formula-box">
-          <div class="formula-main">
-            y = A sin θ
-          </div>
-
-          <div class="formula-secondary">
-            θ = ωt
-          </div>
-
-          <div class="formula-result">
-            <strong>y = A sin(ωt)</strong>
-          </div>
-        </div>
-
-      </section>
+            </div>
 
 
-      <!-- =======================================================
-           RIGHT: SINUSOIDAL GRAPH
-      ======================================================== -->
-      <section class="panel graph-panel">
-
-        <div class="panel-title">
-          <h2>3. Y-Displacement vs Time</h2>
-        </div>
-
-        <div class="canvas-wrapper graph-wrapper">
-          <canvas id="graphCanvas"></canvas>
-        </div>
-
-        <div class="graph-equation">
-          <strong>y = A sin(ωt)</strong>
-        </div>
-
-      </section>
+            <div class="diagram-info">
 
 
-      <!-- =======================================================
-           CONTROLS
-      ======================================================== -->
-      <section class="panel controls-panel">
+                <div class="info-item">
 
-        <div class="panel-title">
-          <h2>Controls</h2>
-        </div>
+                    <span class="info-label">
+                        Amplitude
+                    </span>
 
+                    <strong
+                        id="amplitudeDisplay"
+                    >
+                        100 px
+                    </strong>
 
-        <!-- Amplitude -->
-        <div class="control-group">
-
-          <div class="control-header">
-            <label for="amplitudeSlider">
-              Amplitude, A
-            </label>
-
-            <span id="amplitudeValue">100 px</span>
-          </div>
-
-          <input
-            type="range"
-            id="amplitudeSlider"
-            min="50"
-            max="150"
-            step="1"
-            value="100"
-          >
-
-        </div>
+                </div>
 
 
-        <!-- Frequency -->
-        <div class="control-group">
+                <div class="info-item">
 
-          <div class="control-header">
-            <label for="frequencySlider">
-              Frequency, f
-            </label>
+                    <span class="info-label">
+                        Phase angle
+                    </span>
 
-            <span id="frequencyValue">0.50 Hz</span>
-          </div>
+                    <strong
+                        id="angleDisplay"
+                    >
+                        0°
+                    </strong>
 
-          <input
-            type="range"
-            id="frequencySlider"
-            min="0.1"
-            max="2"
-            step="0.1"
-            value="0.5"
-          >
-
-        </div>
+                </div>
 
 
-        <!-- Playback controls -->
-        <div class="button-row">
+                <div class="info-item">
 
-          <button
-            id="playButton"
-            class="control-button primary"
-          >
-            ▶ Play
-          </button>
+                    <span class="info-label">
+                        Y displacement
+                    </span>
 
-          <button
-            id="resetButton"
-            class="control-button"
-          >
-            ↻ Reset
-          </button>
+                    <strong
+                        id="yDisplay"
+                    >
+                        0 px
+                    </strong>
 
-        </div>
+                </div>
 
 
-        <!-- Y component toggle -->
-        <div class="toggle-row">
+            </div>
 
-          <label for="yComponentToggle">
-            <span>Show Y-component</span>
+        </section>
 
-            <input
-              type="checkbox"
-              id="yComponentToggle"
-              checked
+
+
+        <!-- =================================================
+             2. VERTICAL SHM
+        ================================================== -->
+
+        <section
+            class="panel simulation-panel"
+        >
+
+            <div class="panel-title">
+
+                <h2>
+                    2. Vertical SHM
+                </h2>
+
+            </div>
+
+
+            <div class="canvas-wrapper">
+
+                <canvas
+                    id="shmCanvas"
+                ></canvas>
+
+            </div>
+
+
+            <div class="formula-box">
+
+                <div class="formula-main">
+                    y = A sin θ
+                </div>
+
+                <div class="formula-secondary">
+                    θ = ωt
+                </div>
+
+                <div class="formula-result">
+
+                    <strong>
+                        y = A sin(ωt)
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             3. SINUSOIDAL GRAPH
+        ================================================== -->
+
+        <section
+            class="panel graph-panel"
+        >
+
+            <div class="panel-title">
+
+                <h2>
+                    3. Y-Displacement vs Time
+                </h2>
+
+            </div>
+
+
+            <div
+                class="canvas-wrapper graph-wrapper"
             >
 
-            <span class="toggle-slider"></span>
-          </label>
+                <canvas
+                    id="graphCanvas"
+                ></canvas>
 
-        </div>
-
-      </section>
-
-
-      <!-- =======================================================
-           PHYSICS VALUES
-      ======================================================== -->
-      <section class="panel values-panel">
-
-        <div class="panel-title">
-          <h2>Physics Values</h2>
-        </div>
-
-        <div class="values-grid">
-
-          <div class="value-card">
-            <span>A</span>
-            <strong id="valueAmplitude">100 px</strong>
-          </div>
-
-          <div class="value-card">
-            <span>f</span>
-            <strong id="valueFrequency">0.50 Hz</strong>
-          </div>
-
-          <div class="value-card">
-            <span>ω</span>
-            <strong id="valueOmega">3.14 rad/s</strong>
-          </div>
-
-          <div class="value-card">
-            <span>T</span>
-            <strong id="valuePeriod">2.00 s</strong>
-          </div>
-
-          <div class="value-card">
-            <span>θ</span>
-            <strong id="valueTheta">0°</strong>
-          </div>
-
-          <div class="value-card highlight">
-            <span>y</span>
-            <strong id="valueY">0 px</strong>
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =======================================================
-           FORMULA PANEL
-      ======================================================== -->
-      <section class="panel formula-panel">
-
-        <button
-          class="collapse-button"
-          id="formulaToggle"
-          type="button"
-        >
-          <span>Physics Relationship</span>
-          <span id="formulaArrow">▼</span>
-        </button>
-
-        <div
-          class="formula-content"
-          id="formulaContent"
-        >
-
-          <div class="formula-step">
-            <span>1.</span>
-            <p>
-              The particle moves in uniform circular motion.
-            </p>
-          </div>
-
-          <div class="formula-step">
-            <span>2.</span>
-            <p>
-              Consider only the <strong>vertical component</strong>.
-            </p>
-          </div>
-
-          <div class="formula-step">
-            <span>3.</span>
-
-            <div class="equation">
-              y = A sin θ
             </div>
-          </div>
 
-          <div class="formula-step">
-            <span>4.</span>
 
-            <div class="equation">
-              θ = ωt
+            <div class="graph-equation">
+
+                <strong>
+                    y = A sin(ωt)
+                </strong>
+
             </div>
-          </div>
 
-          <div class="formula-step">
-            <span>5.</span>
-
-            <div class="equation final-equation">
-              y = A sin(ωt)
-            </div>
-          </div>
-
-          <div class="concept-message">
-            The vertical projection of uniform circular motion
-            performs simple harmonic motion.
-          </div>
-
-        </div>
-
-      </section>
+        </section>
 
 
-      <!-- =======================================================
-           CONCEPT / LEARNING OBJECTIVE
-      ======================================================== -->
-      <section class="panel concept-panel">
 
-        <button
-          class="collapse-button"
-          id="conceptToggle"
-          type="button"
-        >
-          <span>Learning Objective</span>
-          <span id="conceptArrow">▼</span>
-        </button>
+        <!-- =================================================
+             CONTROLS
+        ================================================== -->
 
-        <div
-          class="concept-content"
-          id="conceptContent"
+        <section
+            class="panel controls-panel"
         >
 
-          <p>
-            Explore how the <strong>Y-component</strong> of uniform
-            circular motion produces simple harmonic motion.
-          </p>
+            <div class="panel-title">
 
-          <p>
-            Change the amplitude and frequency and observe how the
-            circular particle, vertical SHM particle, and sinusoidal
-            graph remain synchronized.
-          </p>
+                <h2>
+                    Controls
+                </h2>
 
-          <div class="key-equation">
-            y = A sin(ωt)
-          </div>
+            </div>
 
-        </div>
 
-      </section>
+            <!-- =============================================
+                 AMPLITUDE
+            ============================================== -->
+
+            <div class="control-group">
+
+                <div class="control-header">
+
+                    <label
+                        for="amplitudeSlider"
+                    >
+                        Amplitude, A
+                    </label>
+
+                    <span
+                        id="amplitudeValue"
+                    >
+                        100 px
+                    </span>
+
+                </div>
+
+
+                <input
+                    type="range"
+                    id="amplitudeSlider"
+                    min="50"
+                    max="150"
+                    step="1"
+                    value="100"
+                >
+
+            </div>
+
+
+
+            <!-- =============================================
+                 FREQUENCY
+            ============================================== -->
+
+            <div class="control-group">
+
+                <div class="control-header">
+
+                    <label
+                        for="frequencySlider"
+                    >
+                        Frequency, f
+                    </label>
+
+                    <span
+                        id="frequencyValue"
+                    >
+                        0.50 Hz
+                    </span>
+
+                </div>
+
+
+                <input
+                    type="range"
+                    id="frequencySlider"
+                    min="0.1"
+                    max="2"
+                    step="0.1"
+                    value="0.5"
+                >
+
+            </div>
+
+
+
+            <!-- =============================================
+                 PLAYBACK
+            ============================================== -->
+
+            <div class="button-row">
+
+                <button
+                    id="playButton"
+                    class="control-button primary"
+                    type="button"
+                >
+                    ▶ Play
+                </button>
+
+
+                <button
+                    id="resetButton"
+                    class="control-button"
+                    type="button"
+                >
+                    ↻ Reset
+                </button>
+
+            </div>
+
+
+
+            <!-- =============================================
+                 Y COMPONENT TOGGLE
+            ============================================== -->
+
+            <div class="toggle-row">
+
+                <label
+                    for="yComponentToggle"
+                >
+
+                    <span>
+                        Show Y-component
+                    </span>
+
+
+                    <input
+                        type="checkbox"
+                        id="yComponentToggle"
+                        checked
+                    >
+
+
+                    <span
+                        class="toggle-slider"
+                    ></span>
+
+                </label>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PHYSICS VALUES
+        ================================================== -->
+
+        <section
+            class="panel values-panel"
+        >
+
+            <div class="panel-title">
+
+                <h2>
+                    Physics Values
+                </h2>
+
+            </div>
+
+
+            <div class="values-grid">
+
+
+                <!-- AMPLITUDE -->
+
+                <div class="value-card">
+
+                    <span>
+                        A
+                    </span>
+
+                    <strong
+                        id="valueAmplitude"
+                    >
+                        100 px
+                    </strong>
+
+                </div>
+
+
+                <!-- FREQUENCY -->
+
+                <div class="value-card">
+
+                    <span>
+                        f
+                    </span>
+
+                    <strong
+                        id="valueFrequency"
+                    >
+                        0.50 Hz
+                    </strong>
+
+                </div>
+
+
+                <!-- ANGULAR FREQUENCY -->
+
+                <div class="value-card">
+
+                    <span>
+                        ω
+                    </span>
+
+                    <strong
+                        id="valueOmega"
+                    >
+                        3.14 rad/s
+                    </strong>
+
+                </div>
+
+
+                <!-- PERIOD -->
+
+                <div class="value-card">
+
+                    <span>
+                        T
+                    </span>
+
+                    <strong
+                        id="valuePeriod"
+                    >
+                        2.00 s
+                    </strong>
+
+                </div>
+
+
+                <!-- PHASE -->
+
+                <div class="value-card">
+
+                    <span>
+                        θ
+                    </span>
+
+                    <strong
+                        id="valueTheta"
+                    >
+                        0°
+                    </strong>
+
+                </div>
+
+
+                <!-- DISPLACEMENT -->
+
+                <div class="value-card highlight">
+
+                    <span>
+                        y
+                    </span>
+
+                    <strong
+                        id="valueY"
+                    >
+                        0 px
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PHYSICS RELATIONSHIP
+        ================================================== -->
+
+        <section
+            class="panel formula-panel"
+        >
+
+            <button
+                class="collapse-button"
+                id="formulaToggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="formulaContent"
+            >
+
+                <span>
+                    Physics Relationship
+                </span>
+
+                <span id="formulaArrow">
+                    ▼
+                </span>
+
+            </button>
+
+
+            <div
+                class="formula-content"
+                id="formulaContent"
+            >
+
+
+                <div class="formula-step">
+
+                    <span>
+                        1.
+                    </span>
+
+                    <p>
+                        The particle moves in
+                        uniform circular motion.
+                    </p>
+
+                </div>
+
+
+
+                <div class="formula-step">
+
+                    <span>
+                        2.
+                    </span>
+
+                    <p>
+                        Consider only the
+                        <strong>
+                            vertical component
+                        </strong>
+                        of the circular motion.
+                    </p>
+
+                </div>
+
+
+
+                <div class="formula-step">
+
+                    <span>
+                        3.
+                    </span>
+
+                    <div class="equation">
+                        y = A sin θ
+                    </div>
+
+                </div>
+
+
+
+                <div class="formula-step">
+
+                    <span>
+                        4.
+                    </span>
+
+                    <div class="equation">
+                        θ = ωt
+                    </div>
+
+                </div>
+
+
+
+                <div class="formula-step">
+
+                    <span>
+                        5.
+                    </span>
+
+                    <div
+                        class="equation final-equation"
+                    >
+                        y = A sin(ωt)
+                    </div>
+
+                </div>
+
+
+
+                <div class="concept-message">
+
+                    The vertical projection of
+                    uniform circular motion
+                    performs simple harmonic motion.
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             LEARNING OBJECTIVE
+        ================================================== -->
+
+        <section
+            class="panel concept-panel"
+        >
+
+            <button
+                class="collapse-button"
+                id="conceptToggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="conceptContent"
+            >
+
+                <span>
+                    Learning Objective
+                </span>
+
+                <span id="conceptArrow">
+                    ▼
+                </span>
+
+            </button>
+
+
+            <div
+                class="concept-content"
+                id="conceptContent"
+            >
+
+                <p>
+
+                    Explore how the
+                    <strong>
+                        Y-component
+                    </strong>
+                    of uniform circular motion
+                    produces simple harmonic motion.
+
+                </p>
+
+
+                <p>
+
+                    Change the amplitude and frequency
+                    and observe how the circular particle,
+                    vertical SHM particle, and sinusoidal
+                    graph remain synchronized.
+
+                </p>
+
+
+                <div class="key-equation">
+
+                    y = A sin(ωt)
+
+                </div>
+
+
+            </div>
+
+        </section>
+
 
     </main>
 
 
-    <!-- =========================================================
+
+    <!-- =====================================================
          FOOTER
-    ========================================================== -->
+    ====================================================== -->
+
     <footer class="footer">
 
-      <span>
-        Circular Motion → Simple Harmonic Motion
-      </span>
+        <span>
+            Circular Motion → Simple Harmonic Motion
+        </span>
 
-      <span>
-        Y-component: y = A sin(ωt)
-      </span>
+        <span>
+            Y-component: y = A sin(ωt)
+        </span>
 
     </footer>
 
-  </div>
+
+</div>
 
 
-  <!-- ===========================================================
-       JAVASCRIPT
-  ============================================================ -->
-  <script src="script.js"></script>
+
+<!-- =========================================================
+     JAVASCRIPT
+
+     Keep this AFTER the HTML elements so that script.js
+     can find all canvas and control elements.
+========================================================== -->
+
+<script src="script.js"></script>
+
 
 </body>
 </html>
