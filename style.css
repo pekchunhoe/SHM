@@ -1,0 +1,769 @@
+/* =========================================================
+   CIRCULAR MOTION → SHM
+   STYLE.CSS
+========================================================= */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #f4f7fb;
+  --panel: #ffffff;
+  --border: #d9e0ea;
+  --text: #172033;
+  --muted: #667085;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --green: #16a34a;
+  --orange: #f59e0b;
+  --red: #dc2626;
+  --blue: #2563eb;
+  --shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.app {
+  width: 100%;
+  max-width: 1500px;
+  margin: auto;
+  padding: 14px;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: clamp(20px, 2.5vw, 30px);
+  margin-bottom: 5px;
+}
+
+.header p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.formula-header {
+  background: #eef4ff;
+  border: 1px solid #cbdcff;
+  border-radius: 10px;
+  padding: 12px 18px;
+
+  font-size: clamp(18px, 2vw, 25px);
+  font-weight: bold;
+  color: var(--primary);
+
+  white-space: nowrap;
+}
+
+/* =========================================================
+   MAIN GRID
+========================================================= */
+
+.main-layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(280px, 1fr)
+    minmax(280px, 1fr)
+    minmax(280px, 1fr);
+
+  gap: 14px;
+}
+
+/* =========================================================
+   PANEL
+========================================================= */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+
+  overflow: hidden;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 48px;
+  padding: 10px 14px;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title h2 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status {
+  font-size: 12px;
+  font-weight: bold;
+
+  padding: 5px 9px;
+  border-radius: 20px;
+
+  background: #f1f5f9;
+  color: var(--muted);
+}
+
+.status.playing {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+.canvas-wrapper {
+  position: relative;
+
+  width: 100%;
+  aspect-ratio: 1 / 1;
+
+  background: #ffffff;
+}
+
+canvas {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+}
+
+/* Graph can be wider */
+.graph-wrapper {
+  aspect-ratio: 1.55 / 1;
+}
+
+/* =========================================================
+   DIAGRAM INFORMATION
+========================================================= */
+
+.diagram-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  border-top: 1px solid var(--border);
+}
+
+.info-item {
+  text-align: center;
+  padding: 9px 5px;
+
+  border-right: 1px solid var(--border);
+}
+
+.info-item:last-child {
+  border-right: none;
+}
+
+.info-label {
+  display: block;
+
+  color: var(--muted);
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+.info-item strong {
+  font-size: 13px;
+}
+
+/* =========================================================
+   FORMULA BOX
+========================================================= */
+
+.formula-box {
+  text-align: center;
+
+  padding: 12px;
+
+  border-top: 1px solid var(--border);
+  background: #fafcff;
+}
+
+.formula-main {
+  font-size: 21px;
+  font-weight: bold;
+  color: var(--primary);
+  margin-bottom: 5px;
+}
+
+.formula-secondary {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.formula-result {
+  font-size: 17px;
+}
+
+/* =========================================================
+   GRAPH EQUATION
+========================================================= */
+
+.graph-equation {
+  text-align: center;
+
+  padding: 10px;
+
+  border-top: 1px solid var(--border);
+
+  font-size: 17px;
+  color: var(--primary);
+}
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+.controls-panel {
+  grid-column: span 2;
+}
+
+.control-group {
+  padding: 13px 16px 7px;
+}
+
+.control-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 8px;
+}
+
+.control-header label {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.control-header span {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: bold;
+}
+
+/* =========================================================
+   RANGE SLIDER
+========================================================= */
+
+input[type="range"] {
+  width: 100%;
+  height: 7px;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  background: #dbe3ef;
+  border-radius: 10px;
+
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 21px;
+  height: 21px;
+
+  border-radius: 50%;
+  border: 3px solid white;
+
+  background: var(--primary);
+
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+
+  border-radius: 50%;
+  border: 3px solid white;
+
+  background: var(--primary);
+
+  cursor: pointer;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.button-row {
+  display: flex;
+  gap: 10px;
+
+  padding: 12px 16px;
+}
+
+.control-button {
+  flex: 1;
+
+  min-height: 42px;
+
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: var(--text);
+
+  font-size: 14px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
+}
+
+.control-button:hover {
+  background: #f1f5f9;
+}
+
+.control-button:active {
+  transform: scale(0.98);
+}
+
+.control-button.primary {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.control-button.primary:hover {
+  background: var(--primary-dark);
+}
+
+/* =========================================================
+   Y COMPONENT TOGGLE
+========================================================= */
+
+.toggle-row {
+  padding: 8px 16px 15px;
+}
+
+.toggle-row label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  font-size: 14px;
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+.toggle-row input {
+  display: none;
+}
+
+.toggle-slider {
+  position: relative;
+
+  width: 48px;
+  height: 26px;
+
+  background: #cbd5e1;
+  border-radius: 20px;
+
+  transition: background 0.2s ease;
+}
+
+.toggle-slider::before {
+  content: "";
+
+  position: absolute;
+
+  width: 20px;
+  height: 20px;
+
+  top: 3px;
+  left: 3px;
+
+  border-radius: 50%;
+
+  background: white;
+
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+
+  transition: transform 0.2s ease;
+}
+
+.toggle-row input:checked + .toggle-slider {
+  background: var(--primary);
+}
+
+.toggle-row input:checked + .toggle-slider::before {
+  transform: translateX(22px);
+}
+
+/* =========================================================
+   PHYSICS VALUES
+========================================================= */
+
+.values-panel {
+  grid-column: span 1;
+}
+
+.values-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 8px;
+
+  padding: 12px;
+}
+
+.value-card {
+  min-height: 65px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  background: #f8fafc;
+
+  text-align: center;
+}
+
+.value-card span {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.value-card strong {
+  font-size: 14px;
+}
+
+.value-card.highlight {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.value-card.highlight strong {
+  color: var(--primary);
+}
+
+/* =========================================================
+   COLLAPSIBLE PANELS
+========================================================= */
+
+.formula-panel,
+.concept-panel {
+  grid-column: span 3;
+}
+
+.collapse-button {
+  width: 100%;
+
+  min-height: 48px;
+
+  padding: 10px 15px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  border: none;
+  background: white;
+
+  color: var(--text);
+
+  font-size: 15px;
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+.collapse-button:hover {
+  background: #f8fafc;
+}
+
+.formula-content,
+.concept-content {
+  padding: 0 16px 16px;
+}
+
+/* =========================================================
+   FORMULA STEPS
+========================================================= */
+
+.formula-step {
+  display: flex;
+  gap: 12px;
+
+  padding: 9px 0;
+
+  border-top: 1px solid #edf0f4;
+}
+
+.formula-step > span {
+  min-width: 22px;
+
+  font-weight: bold;
+  color: var(--primary);
+}
+
+.formula-step p {
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.equation {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.final-equation {
+  color: var(--primary);
+  font-size: 21px;
+}
+
+.concept-message {
+  margin-top: 10px;
+
+  padding: 11px;
+
+  background: #eff6ff;
+  border-left: 4px solid var(--primary);
+
+  border-radius: 6px;
+
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* =========================================================
+   CONCEPT PANEL
+========================================================= */
+
+.concept-content p {
+  font-size: 14px;
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+
+.key-equation {
+  text-align: center;
+
+  padding: 12px;
+
+  margin-top: 8px;
+
+  border-radius: 8px;
+
+  background: #eef4ff;
+
+  color: var(--primary);
+
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+
+  margin-top: 14px;
+
+  padding: 10px 4px;
+
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+  .main-layout {
+    grid-template-columns:
+      minmax(260px, 1fr)
+      minmax(260px, 1fr);
+  }
+
+  .controls-panel {
+    grid-column: span 2;
+  }
+
+  .values-panel {
+    grid-column: span 2;
+  }
+
+  .formula-panel,
+  .concept-panel {
+    grid-column: span 2;
+  }
+
+  .graph-panel {
+    grid-column: span 2;
+  }
+
+}
+
+/* =========================================================
+   MOBILE / IPAD PORTRAIT
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .app {
+    padding: 8px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+
+    padding: 13px;
+  }
+
+  .formula-header {
+    text-align: center;
+  }
+
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .simulation-panel,
+  .graph-panel,
+  .controls-panel,
+  .values-panel,
+  .formula-panel,
+  .concept-panel {
+    grid-column: span 1;
+  }
+
+  .canvas-wrapper {
+    aspect-ratio: 1 / 1;
+  }
+
+  .graph-wrapper {
+    aspect-ratio: 1.35 / 1;
+  }
+
+  .values-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer {
+    flex-direction: column;
+    text-align: center;
+  }
+
+}
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 420px) {
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .formula-header {
+    font-size: 17px;
+  }
+
+  .panel-title h2 {
+    font-size: 14px;
+  }
+
+  .diagram-info {
+    grid-template-columns: 1fr;
+  }
+
+  .info-item {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .info-item:last-child {
+    border-bottom: none;
+  }
+
+  .button-row {
+    flex-direction: column;
+  }
+
+  .control-button {
+    width: 100%;
+  }
+
+}
+
+/* =========================================================
+   TOUCH DEVICES
+========================================================= */
+
+button,
+input[type="range"],
+.toggle-row label {
+  touch-action: manipulation;
+}
+
+input[type="range"] {
+  min-height: 30px;
+}
