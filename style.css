@@ -1219,6 +1219,87 @@ input[type="range"]::-moz-range-thumb {
 
 }
 
+/* =========================================================
+   FINAL CANVAS ALIGNMENT FIX
+   Circular Motion + SHM + Graph
+========================================================= */
+
+/* Keep canvas rendering predictable */
+canvas {
+    display: block;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CIRCULAR MOTION + SHM CANVASES
+========================================================= */
+
+#circularCanvas,
+#shmCanvas {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
+}
+
+
+/* =========================================================
+   DISPLACEMENT-TIME GRAPH
+========================================================= */
+
+#graphCanvas {
+    width: 100%;
+    height: auto;
+    min-height: 260px;
+    display: block;
+}
+
+
+/* =========================================================
+   PREVENT FLEX/GRID STRETCHING FROM DISTORTING CANVAS
+========================================================= */
+
+#circularCanvas,
+#shmCanvas,
+#graphCanvas {
+    max-width: 100%;
+}
+
+
+/* =========================================================
+   SIMULATION CANVAS CONTAINERS
+========================================================= */
+
+.circular-canvas-container,
+.shm-canvas-container,
+.graph-canvas-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    #circularCanvas,
+    #shmCanvas {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1;
+    }
+
+    #graphCanvas {
+        width: 100%;
+        height: auto;
+        min-height: 220px;
+    }
+
+}
 
 /* =========================================================
    END OF STYLE.CSS
