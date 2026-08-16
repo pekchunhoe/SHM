@@ -911,25 +911,22 @@ function getSharedVerticalRatio() {
 
 function getGraphZeroY() {
 
-    if (
-        graphHeight <= 0
-    ) {
-
+    if (graphHeight <= 0) {
         return 0;
-
     }
 
+    const top = 48;
+    const bottom = graphHeight - 42;
 
     /*
-       Same normalized vertical position
-       as the circular-motion centre.
+       The equilibrium axis is the exact
+       vertical centre of the graph plotting area.
     */
 
     return (
-        graphHeight *
-        getSharedVerticalRatio()
+        top +
+        (bottom - top) / 2
     );
-
 }
 
 
