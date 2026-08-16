@@ -2,9 +2,7 @@
    SHM SIMULATION
    CIRCULAR MOTION → SIMPLE HARMONIC MOTION
 
-   Physics:
-
-       x = A cos(ωt)
+   PHYSICS MODEL
 
        y = A sin(ωt)
 
@@ -13,7 +11,11 @@
        T = 1/f
 
    IMPORTANT:
-   SHM is generated from the Y-component.
+   The SHM is produced by the Y-component
+   of the circular motion.
+
+   This is a clean replacement for the
+   previous script.js.
 ========================================================= */
 
 
@@ -21,67 +23,55 @@
    1. CONSTANTS
 ========================================================= */
 
-const TWO_PI =
-    Math.PI * 2;
+const TWO_PI = 2 * Math.PI;
+
+/*
+   Number of complete periods shown
+   on the displacement-time graph.
+
+   Change to 1, 2, 3... if desired.
+*/
+const GRAPH_PERIODS = 2;
 
 
 /*
-   Graph displays complete periods.
+   Physical amplitude range.
+
+   These values should match the
+   amplitude slider in index.html.
 */
-
-const GRAPH_PERIODS =
-    2;
-
-
-/*
-   Minimum / maximum amplitude.
-   These should match the HTML slider.
-*/
-
-const MIN_AMPLITUDE =
-    50;
-
-const MAX_AMPLITUDE =
-    150;
+const MIN_AMPLITUDE = 50;
+const MAX_AMPLITUDE = 150;
 
 
 /*
    Frequency range.
 */
-
-const MIN_FREQUENCY =
-    0.1;
-
-const MAX_FREQUENCY =
-    2;
+const MIN_FREQUENCY = 0.1;
+const MAX_FREQUENCY = 2.0;
 
 
 /*
-   Grid spacing.
-*/
+   Common grid spacing.
 
-const GRID_SIZE =
-    25;
+   Both circular-motion and SHM
+   canvases use the same grid spacing.
+*/
+const GRID_SIZE = 25;
 
 
 /* =========================================================
-   2. DOM ELEMENTS
+   2. CANVAS ELEMENTS
 ========================================================= */
 
 const circularCanvas =
-    document.getElementById(
-        "circularCanvas"
-    );
+    document.getElementById("circularCanvas");
 
 const shmCanvas =
-    document.getElementById(
-        "shmCanvas"
-    );
+    document.getElementById("shmCanvas");
 
 const graphCanvas =
-    document.getElementById(
-        "graphCanvas"
-    );
+    document.getElementById("graphCanvas");
 
 
 /* =========================================================
@@ -105,33 +95,23 @@ const graphCtx =
 
 
 /* =========================================================
-   4. CONTROLS
+   4. CONTROL ELEMENTS
 ========================================================= */
 
 const amplitudeSlider =
-    document.getElementById(
-        "amplitudeSlider"
-    );
+    document.getElementById("amplitudeSlider");
 
 const frequencySlider =
-    document.getElementById(
-        "frequencySlider"
-    );
+    document.getElementById("frequencySlider");
 
 const playButton =
-    document.getElementById(
-        "playButton"
-    );
+    document.getElementById("playButton");
 
 const resetButton =
-    document.getElementById(
-        "resetButton"
-    );
+    document.getElementById("resetButton");
 
 const yComponentToggle =
-    document.getElementById(
-        "yComponentToggle"
-    );
+    document.getElementById("yComponentToggle");
 
 
 /* =========================================================
@@ -139,170 +119,148 @@ const yComponentToggle =
 ========================================================= */
 
 const amplitudeDisplay =
-    document.getElementById(
-        "amplitudeDisplay"
-    );
+    document.getElementById("amplitudeDisplay");
+
+const frequencyDisplay =
+    document.getElementById("frequencyDisplay");
+
+const omegaDisplay =
+    document.getElementById("omegaDisplay");
+
+const periodDisplay =
+    document.getElementById("periodDisplay");
 
 const angleDisplay =
-    document.getElementById(
-        "angleDisplay"
-    );
+    document.getElementById("angleDisplay");
 
 const yDisplay =
-    document.getElementById(
-        "yDisplay"
-    );
+    document.getElementById("yDisplay");
+
+
+/*
+   Optional elements.
+
+   The simulation will still work if
+   some of these do not exist.
+*/
+
+const amplitudeValue =
+    document.getElementById("amplitudeValue");
+
+const frequencyValue =
+    document.getElementById("frequencyValue");
 
 const valueAmplitude =
-    document.getElementById(
-        "valueAmplitude"
-    );
+    document.getElementById("valueAmplitude");
 
 const valueFrequency =
-    document.getElementById(
-        "valueFrequency"
-    );
+    document.getElementById("valueFrequency");
 
 const valueOmega =
-    document.getElementById(
-        "valueOmega"
-    );
+    document.getElementById("valueOmega");
 
 const valuePeriod =
-    document.getElementById(
-        "valuePeriod"
-    );
+    document.getElementById("valuePeriod");
 
 const valueTheta =
-    document.getElementById(
-        "valueTheta"
-    );
+    document.getElementById("valueTheta");
 
 const valueY =
-    document.getElementById(
-        "valueY"
-    );
+    document.getElementById("valueY");
 
 const simulationStatus =
-    document.getElementById(
-        "simulationStatus"
-    );
+    document.getElementById("simulationStatus");
 
 
 /* =========================================================
-   6. COLLAPSIBLE PANELS
-========================================================= */
-
-const formulaToggle =
-    document.getElementById(
-        "formulaToggle"
-    );
-
-const formulaContent =
-    document.getElementById(
-        "formulaContent"
-    );
-
-const formulaArrow =
-    document.getElementById(
-        "formulaArrow"
-    );
-
-
-const conceptToggle =
-    document.getElementById(
-        "conceptToggle"
-    );
-
-const conceptContent =
-    document.getElementById(
-        "conceptContent"
-    );
-
-const conceptArrow =
-    document.getElementById(
-        "conceptArrow"
-    );
-
-
-/* =========================================================
-   7. CANVAS DIMENSIONS
-========================================================= */
-
-let circularSize =
-    0;
-
-let shmSize =
-    0;
-
-let graphWidth =
-    0;
-
-let graphHeight =
-    0;
-
-
-/* =========================================================
-   8. SIMULATION STATE
+   6. SIMULATION STATE
 ========================================================= */
 
 const state = {
 
     /*
-       Physical quantities
+       Amplitude A
+
+       This is also the radius of
+       the circular motion.
     */
-
-    amplitude:
-        100,
-
-    frequency:
-        0.5,
-
-    omega:
-        TWO_PI * 0.5,
-
-    period:
-        2,
-
-    theta:
-        0,
-
-    time:
-        0,
-
-    x:
-        100,
-
-    y:
-        0,
+    amplitude: 100,
 
 
     /*
-       Animation
+       Frequency f
     */
-
-    playing:
-        false,
-
-    animationId:
-        null,
-
-    lastTimestamp:
-        null,
+    frequency: 0.5,
 
 
     /*
-       Display
+       Angular frequency ω
     */
+    omega: TWO_PI * 0.5,
 
-    showYComponent:
-        true
+
+    /*
+       Period T
+    */
+    period: 2,
+
+
+    /*
+       Time t
+    */
+    time: 0,
+
+
+    /*
+       Phase angle θ
+
+           θ = ωt
+    */
+    theta: 0,
+
+
+    /*
+       Circular-motion coordinates
+
+           x = A cos θ
+           y = A sin θ
+    */
+    x: 100,
+    y: 0,
+
+
+    /*
+       Animation state
+    */
+    playing: false,
+    animationId: null,
+    lastTimestamp: null,
+
+
+    /*
+       Show Y-component projection
+    */
+    showYComponent: true
 
 };
 
 
 /* =========================================================
-   9. FORMAT NUMBER
+   7. CANVAS SIZE VARIABLES
+========================================================= */
+
+let circularWidth = 0;
+let circularHeight = 0;
+
+let shmWidth = 0;
+let shmHeight = 0;
+
+let graphWidth = 0;
+let graphHeight = 0;
+
+
+/* =========================================================
+   8. NUMBER FORMAT
 ========================================================= */
 
 function formatNumber(
@@ -313,23 +271,17 @@ function formatNumber(
     if (
         !Number.isFinite(value)
     ) {
-
         return "0";
-
     }
 
-
-    return Number(
-        value
-    ).toFixed(
+    return Number(value).toFixed(
         decimals
     );
-
 }
 
 
 /* =========================================================
-   10. FORMAT ANGLE
+   9. ANGLE FORMAT
 ========================================================= */
 
 function formatAngle(
@@ -337,50 +289,34 @@ function formatAngle(
 ) {
 
     let degrees =
-        radians *
-        180 /
-        Math.PI;
-
-
-    /*
-       Keep the angle between
-       0° and 360°.
-    */
+        radians * 180 / Math.PI;
 
     degrees =
-        (
-            degrees % 360 +
-            360
-        ) % 360;
-
+        ((degrees % 360) + 360) % 360;
 
     return `${formatNumber(
         degrees,
         0
     )}°`;
-
 }
 
 
 /* =========================================================
-   11. READ SLIDER VALUES
+   10. READ SLIDER VALUES
 ========================================================= */
 
 function readControls() {
 
-    /* -----------------------------------------------------
-       Amplitude
-    ----------------------------------------------------- */
+    /*
+       AMPLITUDE
+    */
 
-    if (
-        amplitudeSlider
-    ) {
+    if (amplitudeSlider) {
 
         const value =
             parseFloat(
                 amplitudeSlider.value
             );
-
 
         if (
             Number.isFinite(value)
@@ -396,23 +332,19 @@ function readControls() {
                 );
 
         }
-
     }
 
 
-    /* -----------------------------------------------------
-       Frequency
-    ----------------------------------------------------- */
+    /*
+       FREQUENCY
+    */
 
-    if (
-        frequencySlider
-    ) {
+    if (frequencySlider) {
 
         const value =
             parseFloat(
                 frequencySlider.value
             );
-
 
         if (
             Number.isFinite(value)
@@ -428,41 +360,37 @@ function readControls() {
                 );
 
         }
-
     }
 
 
-    /* -----------------------------------------------------
-       Angular frequency
+    /*
+       ANGULAR FREQUENCY
 
            ω = 2πf
-    ----------------------------------------------------- */
+    */
 
     state.omega =
         TWO_PI *
         state.frequency;
 
 
-    /* -----------------------------------------------------
-       Period
+    /*
+       PERIOD
 
            T = 1/f
-    ----------------------------------------------------- */
+    */
 
     state.period =
         state.frequency > 0
-            ? 1 /
-              state.frequency
+            ? 1 / state.frequency
             : 0;
 
 
-    /* -----------------------------------------------------
-       Y-component display
-    ----------------------------------------------------- */
+    /*
+       Y-COMPONENT TOGGLE
+    */
 
-    if (
-        yComponentToggle
-    ) {
+    if (yComponentToggle) {
 
         state.showYComponent =
             yComponentToggle.checked;
@@ -470,19 +398,19 @@ function readControls() {
     }
 
 
-    calculateSHM();
+    calculateMotion();
 
 }
 
 
 /* =========================================================
-   12. CALCULATE SHM
+   11. CALCULATE MOTION
 ========================================================= */
 
-function calculateSHM() {
+function calculateMotion() {
 
     /*
-       Angular position:
+       Phase:
 
            θ = ωt
     */
@@ -493,72 +421,122 @@ function calculateSHM() {
 
 
     /*
-       Keep theta manageable.
+       Keep θ within one revolution.
+
+       This does NOT change the physical
+       motion because sin/cos are periodic.
     */
 
-    state.theta =
-        state.theta %
-        TWO_PI;
-
-
-    if (
-        state.theta < 0
-    ) {
-
-        state.theta +=
-            TWO_PI;
-
-    }
+    const displayTheta =
+        state.theta % TWO_PI;
 
 
     /*
-       Circular motion coordinates:
+       Circular motion:
 
            x = A cos θ
 
            y = A sin θ
+
+       The Y component is used for SHM.
     */
 
     state.x =
         state.amplitude *
         Math.cos(
-            state.theta
+            displayTheta
         );
-
 
     state.y =
         state.amplitude *
         Math.sin(
-            state.theta
+            displayTheta
         );
 
 }
 
 
 /* =========================================================
-   13. GET AMPLITUDE IN PIXELS
+   12. GET DISPLAY PHASE
 ========================================================= */
 
-function getAmplitudePixels() {
+function getDisplayTheta() {
 
-    /*
-       The amplitude slider itself is already
-       expressed in pixels.
+    let theta =
+        state.theta % TWO_PI;
 
-       Therefore:
+    if (
+        theta < 0
+    ) {
+        theta += TWO_PI;
+    }
 
-           radius = A
-
-       directly.
-    */
-
-    return state.amplitude;
+    return theta;
 
 }
 
 
 /* =========================================================
-   14. CLEAR CANVAS
+   13. GET GRAPH DURATION
+========================================================= */
+
+function getGraphDuration() {
+
+    /*
+       Exactly GRAPH_PERIODS complete periods.
+
+           duration = nT
+    */
+
+    if (
+        state.period <= 0
+    ) {
+        return 1;
+    }
+
+    return (
+        GRAPH_PERIODS *
+        state.period
+    );
+
+}
+
+
+/* =========================================================
+   14. SHM EQUATION
+========================================================= */
+
+function getSHMDisplacement(
+    time
+) {
+
+    /*
+       THE CENTRAL PHYSICS EQUATION
+
+           y = A sin(ωt)
+
+       This function is used by the graph.
+
+       The circular-motion particle uses
+       the same equation for its Y-coordinate.
+
+       Therefore they can never become
+       physically inconsistent.
+    */
+
+    return (
+        state.amplitude *
+        Math.sin(
+            state.omega *
+            time
+        )
+    );
+
+}
+
+
+/* =========================================================
+   15. CLEAR CANVAS
 ========================================================= */
 
 function clearCanvas(
@@ -571,18 +549,12 @@ function clearCanvas(
         return;
     }
 
-
     ctx.clearRect(
         0,
         0,
         width,
         height
     );
-
-
-    /*
-       White background.
-    */
 
     ctx.fillStyle =
         "#ffffff";
@@ -598,20 +570,34 @@ function clearCanvas(
 
 
 /* =========================================================
-   15. DRAW GRID
+   16. DRAW COMMON GRID
 ========================================================= */
 
 function drawGrid(
     ctx,
     width,
-    height,
-    centerX,
-    centerY
+    height
 ) {
 
     if (!ctx) {
         return;
     }
+
+    /*
+       IMPORTANT:
+
+       Grid coordinates are based on the
+       canvas centre.
+
+       Therefore the horizontal x-axis
+       is always exactly at 50% height.
+    */
+
+    const centerX =
+        width / 2;
+
+    const centerY =
+        height / 2;
 
 
     ctx.save();
@@ -729,313 +715,7 @@ function drawGrid(
 
 
 /* =========================================================
-   16. CIRCULAR GEOMETRY
-========================================================= */
-
-function getCircularGeometry() {
-
-    const size =
-        circularSize;
-
-
-    const centerX =
-        size / 2;
-
-    const centerY =
-        size / 2;
-
-
-    /*
-       Radius = current amplitude.
-
-       Therefore changing A changes
-       the circular radius.
-    */
-
-    const radius =
-        getAmplitudePixels();
-
-
-    /*
-       Canvas coordinates:
-
-           x = A cos θ
-
-           y = A sin θ
-
-       Canvas Y is downward, therefore
-       positive physical y is subtracted.
-    */
-
-    const particleX =
-        centerX +
-        state.x;
-
-
-    const particleY =
-        centerY -
-        state.y;
-
-
-    return {
-
-        size,
-
-        centerX,
-
-        centerY,
-
-        radius,
-
-        particleX,
-
-        particleY
-
-    };
-
-}
-
-
-/* =========================================================
-   17. GET SHM GRAPH Y
-========================================================= */
-
-function getGraphY(
-    t
-) {
-
-    /*
-       The displacement-time graph MUST use
-       the exact same equation as the
-       circular-motion Y-component:
-
-           y = A sin(ωt)
-    */
-
-    return (
-        state.amplitude *
-        Math.sin(
-            state.omega *
-            t
-        )
-    );
-
-}
-
-
-/* =========================================================
-   18. GRAPH TIME WINDOW
-========================================================= */
-
-function getGraphDuration() {
-
-    /*
-       Show exactly two complete periods.
-
-           duration = 2T
-    */
-
-    return (
-        GRAPH_PERIODS *
-        state.period
-    );
-
-}
-
-
-/* =========================================================
-   19. GRAPH AREA
-========================================================= */
-
-function getGraphArea() {
-
-    const width =
-        graphWidth;
-
-    const height =
-        graphHeight;
-
-
-    const left =
-        55;
-
-    const right =
-        width - 20;
-
-    const top =
-        35;
-
-    const bottom =
-        height - 45;
-
-
-    /*
-       IMPORTANT:
-
-       The graph equilibrium axis must
-       align with the circular-motion
-       horizontal x-axis.
-
-       Circular x-axis:
-
-           circularSize / 2
-
-       Graph x-axis:
-
-           graphHeight / 2
-    */
-
-    const zeroY =
-        height / 2;
-
-
-    return {
-
-        left,
-
-        right,
-
-        top,
-
-        bottom,
-
-        width:
-            right - left,
-
-        height:
-            bottom - top,
-
-        zeroY
-
-    };
-
-}
-
-
-/* =========================================================
-   20. TIME → GRAPH X
-========================================================= */
-
-function timeToGraphX(
-    t,
-    area,
-    duration
-) {
-
-    if (
-        duration <= 0
-    ) {
-
-        return area.left;
-
-    }
-
-
-    return (
-        area.left +
-        (
-            t /
-            duration
-        ) *
-        area.width
-    );
-
-}
-
-
-/* =========================================================
-   21. DISPLACEMENT → GRAPH Y
-========================================================= */
-
-function displacementToGraphY(
-    displacement,
-    area
-) {
-
-    /*
-       Maximum visual amplitude.
-
-       This determines how large the
-       graph can become on screen.
-    */
-
-    const maxVisualAmplitude =
-        Math.min(
-            area.height * 0.40,
-            area.zeroY -
-            area.top -
-            10,
-            area.bottom -
-            area.zeroY -
-            10
-        );
-
-
-    /*
-       Convert physical displacement
-       relative to current A.
-
-       Because:
-
-           displacement / A
-           
-       ranges from -1 to +1.
-    */
-
-    const normalized =
-        state.amplitude !== 0
-            ? displacement /
-              state.amplitude
-            : 0;
-
-
-    /*
-       IMPORTANT:
-
-       amplitude is now visually tied
-       to the current slider value.
-
-       A = MIN → smaller wave
-       A = MAX → larger wave
-    */
-
-    const amplitudeRatio =
-        (
-            state.amplitude -
-            MIN_AMPLITUDE
-        ) /
-        (
-            MAX_AMPLITUDE -
-            MIN_AMPLITUDE
-        );
-
-
-    const visualAmplitude =
-        maxVisualAmplitude *
-        (
-            0.30 +
-            0.70 *
-            Math.max(
-                0,
-                Math.min(
-                    1,
-                    amplitudeRatio
-                )
-            )
-        );
-
-
-    return (
-        area.zeroY -
-        normalized *
-        visualAmplitude
-    );
-
-}
-
-
-/* =========================================================
-   22. DRAW ARROW
+   17. DRAW ARROW
 ========================================================= */
 
 function drawArrow(
@@ -1045,7 +725,7 @@ function drawArrow(
     x2,
     y2,
     color,
-    lineWidth = 3
+    width = 3
 ) {
 
     if (!ctx) {
@@ -1070,9 +750,7 @@ function drawArrow(
     if (
         length < 1
     ) {
-
         return;
-
     }
 
 
@@ -1083,7 +761,7 @@ function drawArrow(
         );
 
 
-    const headLength =
+    const head =
         9;
 
 
@@ -1096,7 +774,7 @@ function drawArrow(
         color;
 
     ctx.lineWidth =
-        lineWidth;
+        width;
 
     ctx.lineCap =
         "round";
@@ -1104,6 +782,10 @@ function drawArrow(
     ctx.lineJoin =
         "round";
 
+
+    /*
+       Shaft
+    */
 
     ctx.beginPath();
 
@@ -1120,6 +802,10 @@ function drawArrow(
     ctx.stroke();
 
 
+    /*
+       Arrow head
+    */
+
     ctx.beginPath();
 
     ctx.moveTo(
@@ -1129,31 +815,27 @@ function drawArrow(
 
     ctx.lineTo(
         x2 -
-        headLength *
+        head *
         Math.cos(
-            angle -
-            Math.PI / 6
+            angle - Math.PI / 6
         ),
         y2 -
-        headLength *
+        head *
         Math.sin(
-            angle -
-            Math.PI / 6
+            angle - Math.PI / 6
         )
     );
 
     ctx.lineTo(
         x2 -
-        headLength *
+        head *
         Math.cos(
-            angle +
-            Math.PI / 6
+            angle + Math.PI / 6
         ),
         y2 -
-        headLength *
+        head *
         Math.sin(
-            angle +
-            Math.PI / 6
+            angle + Math.PI / 6
         )
     );
 
@@ -1161,44 +843,67 @@ function drawArrow(
 
     ctx.fill();
 
-
     ctx.restore();
 
 }
 
 
 /* =========================================================
-   23. UPDATE NUMERICAL DISPLAYS
+   18. UPDATE DISPLAY VALUES
 ========================================================= */
 
 function updateDisplays() {
+
+    const A =
+        state.amplitude;
+
+    const f =
+        state.frequency;
+
+    const omega =
+        state.omega;
+
+    const T =
+        state.period;
+
+    const theta =
+        getDisplayTheta();
+
+    const y =
+        state.y;
+
 
     /*
        Amplitude
     */
 
-    if (
-        amplitudeDisplay
-    ) {
+    if (amplitudeDisplay) {
 
         amplitudeDisplay.textContent =
-            `${formatNumber(
-                state.amplitude,
+            `A = ${formatNumber(
+                A,
                 0
-            )} px`;
+            )}`;
 
     }
 
+    if (amplitudeValue) {
 
-    if (
-        valueAmplitude
-    ) {
+        amplitudeValue.textContent =
+            formatNumber(
+                A,
+                0
+            );
+
+    }
+
+    if (valueAmplitude) {
 
         valueAmplitude.textContent =
-            `${formatNumber(
-                state.amplitude,
+            formatNumber(
+                A,
                 0
-            )} px`;
+            );
 
     }
 
@@ -1207,13 +912,31 @@ function updateDisplays() {
        Frequency
     */
 
-    if (
-        valueFrequency
-    ) {
+    if (frequencyDisplay) {
+
+        frequencyDisplay.textContent =
+            `f = ${formatNumber(
+                f,
+                2
+            )} Hz`;
+
+    }
+
+    if (frequencyValue) {
+
+        frequencyValue.textContent =
+            formatNumber(
+                f,
+                2
+            );
+
+    }
+
+    if (valueFrequency) {
 
         valueFrequency.textContent =
             `${formatNumber(
-                state.frequency,
+                f,
                 2
             )} Hz`;
 
@@ -1224,13 +947,21 @@ function updateDisplays() {
        Angular frequency
     */
 
-    if (
-        valueOmega
-    ) {
+    if (omegaDisplay) {
+
+        omegaDisplay.textContent =
+            `ω = ${formatNumber(
+                omega,
+                2
+            )} rad/s`;
+
+    }
+
+    if (valueOmega) {
 
         valueOmega.textContent =
             `${formatNumber(
-                state.omega,
+                omega,
                 2
             )} rad/s`;
 
@@ -1241,13 +972,21 @@ function updateDisplays() {
        Period
     */
 
-    if (
-        valuePeriod
-    ) {
+    if (periodDisplay) {
+
+        periodDisplay.textContent =
+            `T = ${formatNumber(
+                T,
+                2
+            )} s`;
+
+    }
+
+    if (valuePeriod) {
 
         valuePeriod.textContent =
             `${formatNumber(
-                state.period,
+                T,
                 2
             )} s`;
 
@@ -1255,113 +994,49 @@ function updateDisplays() {
 
 
     /*
-       Angle
+       Phase angle
     */
 
-    if (
-        angleDisplay
-    ) {
+    if (angleDisplay) {
 
         angleDisplay.textContent =
-            formatAngle(
-                state.theta
-            );
+            `θ = ${formatAngle(
+                theta
+            )}`;
 
     }
 
-
-    if (
-        valueTheta
-    ) {
+    if (valueTheta) {
 
         valueTheta.textContent =
             formatAngle(
-                state.theta
+                theta
             );
 
     }
 
 
     /*
-       Y displacement
+       Displacement
     */
 
-    if (
-        yDisplay
-    ) {
+    if (yDisplay) {
 
         yDisplay.textContent =
-            `${formatNumber(
-                state.y,
+            `y = ${formatNumber(
+                y,
                 1
-            )} px`;
+            )}`;
 
     }
 
-
-    if (
-        valueY
-    ) {
+    if (valueY) {
 
         valueY.textContent =
             `${formatNumber(
-                state.y,
+                y,
                 1
-            )} px`;
-
-    }
-
-
-    /*
-       Update slider labels if they exist.
-    */
-
-    if (
-        amplitudeSlider
-    ) {
-
-        const amplitudeValue =
-            document.getElementById(
-                "amplitudeValue"
-            );
-
-
-        if (
-            amplitudeValue
-        ) {
-
-            amplitudeValue.textContent =
-                formatNumber(
-                    state.amplitude,
-                    0
-                );
-
-        }
-
-    }
-
-
-    if (
-        frequencySlider
-    ) {
-
-        const frequencyValue =
-            document.getElementById(
-                "frequencyValue"
-            );
-
-
-        if (
-            frequencyValue
-        ) {
-
-            frequencyValue.textContent =
-                formatNumber(
-                    state.frequency,
-                    1
-                );
-
-        }
+            )}`;
 
     }
 
@@ -1369,23 +1044,21 @@ function updateDisplays() {
 
 
 /* =========================================================
-   24. RESIZE CANVASES
+   19. SET CANVAS RESOLUTION
 ========================================================= */
 
-function resizeCanvas(
+function setupCanvas(
     canvas,
     ctx,
-    size
+    width,
+    height
 ) {
 
     if (
         !canvas ||
-        !ctx ||
-        size <= 0
+        !ctx
     ) {
-
         return;
-
     }
 
 
@@ -1396,17 +1069,17 @@ function resizeCanvas(
 
     canvas.width =
         Math.round(
-            size * dpr
+            width * dpr
         );
 
     canvas.height =
         Math.round(
-            size * dpr
+            height * dpr
         );
 
 
     /*
-       CSS dimensions remain logical pixels.
+       Draw using CSS-pixel coordinates.
     */
 
     ctx.setTransform(
@@ -1422,119 +1095,84 @@ function resizeCanvas(
 
 
 /* =========================================================
-   25. RESIZE ALL
+   20. RESIZE ALL CANVASES
 ========================================================= */
 
-function resizeAll() {
+function resizeAllCanvases() {
 
-    if (
-        circularCanvas
-    ) {
+    /*
+       CIRCULAR MOTION
+    */
 
-        circularSize =
-            circularCanvas.clientWidth;
+    if (circularCanvas) {
 
+        circularWidth =
+            circularCanvas.clientWidth ||
+            400;
 
-        if (
-            circularSize <= 0
-        ) {
-
-            circularSize =
-                400;
-
-        }
+        circularHeight =
+            circularCanvas.clientHeight ||
+            circularWidth;
 
 
-        resizeCanvas(
+        setupCanvas(
             circularCanvas,
             circularCtx,
-            circularSize
+            circularWidth,
+            circularHeight
         );
 
     }
 
 
-    if (
-        shmCanvas
-    ) {
+    /*
+       SHM
+    */
 
-        shmSize =
-            shmCanvas.clientWidth;
+    if (shmCanvas) {
 
+        shmWidth =
+            shmCanvas.clientWidth ||
+            400;
 
-        if (
-            shmSize <= 0
-        ) {
-
-            shmSize =
-                400;
-
-        }
+        shmHeight =
+            shmCanvas.clientHeight ||
+            shmWidth;
 
 
-        resizeCanvas(
+        setupCanvas(
             shmCanvas,
             shmCtx,
-            shmSize
+            shmWidth,
+            shmHeight
         );
 
     }
 
 
-    if (
-        graphCanvas
-    ) {
+    /*
+       GRAPH
+
+       IMPORTANT:
+       Do NOT assume graphCanvas is square.
+    */
+
+    if (graphCanvas) {
 
         graphWidth =
-            graphCanvas.clientWidth;
+            graphCanvas.clientWidth ||
+            700;
 
         graphHeight =
-            graphCanvas.clientHeight;
+            graphCanvas.clientHeight ||
+            350;
 
 
-        if (
-            graphWidth <= 0
-        ) {
-
-            graphWidth =
-                600;
-
-        }
-
-
-        if (
-            graphHeight <= 0
-        ) {
-
-            graphHeight =
-                300;
-
-        }
-
-
-        const dpr =
-            window.devicePixelRatio ||
-            1;
-
-
-        graphCanvas.width =
-            Math.round(
-                graphWidth * dpr
-            );
-
-        graphCanvas.height =
-            Math.round(
-                graphHeight * dpr
-            );
-
-
-        graphCtx.setTransform(
-            dpr,
-            0,
-            0,
-            dpr,
-            0,
-            0
+        setupCanvas(
+            graphCanvas,
+            graphCtx,
+            graphWidth,
+            graphHeight
         );
 
     }
@@ -1546,93 +1184,116 @@ function resizeAll() {
 
 
 /* =========================================================
-   26. DRAW ALL
-========================================================= */
-
-function drawAll() {
-
-    calculateSHM();
-
-    updateDisplays();
-
-    drawCircularMotion();
-
-    drawSHM();
-
-    drawGraph();
-
-}
-
-
-/* =========================================================
    END OF PART 1
 ========================================================= */
 
 /* =========================================================
-   PART 2 — CIRCULAR MOTION + SHM DRAWING
+   PART 2 — CIRCULAR MOTION
 ========================================================= */
 
 
 /* =========================================================
-   27. DRAW CIRCULAR MOTION
+   21. DRAW CIRCULAR MOTION
 ========================================================= */
 
 function drawCircularMotion() {
 
     if (
-        !circularCanvas ||
         !circularCtx ||
-        circularSize <= 0
+        circularWidth <= 0 ||
+        circularHeight <= 0
     ) {
         return;
     }
 
 
-    const geometry =
-        getCircularGeometry();
-
-
-    const {
-        size,
-        centerX,
-        centerY,
-        radius,
-        particleX,
-        particleY
-    } = geometry;
-
-
     /* -----------------------------------------------------
-       Clear
+       Clear canvas
     ----------------------------------------------------- */
 
     clearCanvas(
         circularCtx,
-        size,
-        size
+        circularWidth,
+        circularHeight
     );
 
 
     /* -----------------------------------------------------
-       Grid
+       Centre of circular motion
 
-       The x-axis is exactly:
-
-           y = centerY
-           = size / 2
+       IMPORTANT:
+       The horizontal x-axis is at exactly
+       half the canvas height.
     ----------------------------------------------------- */
+
+    const centerX =
+        circularWidth / 2;
+
+    const centerY =
+        circularHeight / 2;
+
+
+    /* -----------------------------------------------------
+       Radius
+
+           R = A
+    ----------------------------------------------------- */
+
+    const radius =
+        Math.min(
+            state.amplitude,
+            Math.min(
+                circularWidth,
+                circularHeight
+            ) * 0.42
+        );
+
+
+    /*
+       Use the same scale factor for the
+       actual circular position.
+
+       This allows the amplitude slider
+       to visibly change the radius while
+       keeping the circle inside the canvas.
+    */
+
+    const scale =
+        state.amplitude !== 0
+            ? radius /
+              state.amplitude
+            : 1;
+
+
+    const circularX =
+        state.x * scale;
+
+    const circularY =
+        state.y * scale;
+
+
+    const particleX =
+        centerX +
+        circularX;
+
+    const particleY =
+        centerY -
+        circularY;
+
+
+    /* =====================================================
+       GRID
+    ===================================================== */
 
     drawGrid(
         circularCtx,
-        size,
-        size,
-        centerX,
-        centerY
+        circularWidth,
+        circularHeight
     );
 
 
     /* =====================================================
-       X AND Y AXES
+       X-AXIS
     ===================================================== */
 
     circularCtx.save();
@@ -1644,10 +1305,6 @@ function drawCircularMotion() {
         2;
 
 
-    /*
-       X-axis
-    */
-
     circularCtx.beginPath();
 
     circularCtx.moveTo(
@@ -1656,16 +1313,16 @@ function drawCircularMotion() {
     );
 
     circularCtx.lineTo(
-        size,
+        circularWidth,
         centerY
     );
 
     circularCtx.stroke();
 
 
-    /*
-       Y-axis
-    */
+    /* =====================================================
+       Y-AXIS
+    ===================================================== */
 
     circularCtx.beginPath();
 
@@ -1676,11 +1333,10 @@ function drawCircularMotion() {
 
     circularCtx.lineTo(
         centerX,
-        size
+        circularHeight
     );
 
     circularCtx.stroke();
-
 
     circularCtx.restore();
 
@@ -1718,11 +1374,14 @@ function drawCircularMotion() {
     ===================================================== */
 
     /*
-       Radius vector:
+       The radius vector is always:
 
            R = A
 
-       from centre to particle.
+       in the physics model.
+
+       Its screen length is scaled only
+       to keep it inside the canvas.
     */
 
     drawArrow(
@@ -1740,26 +1399,13 @@ function drawCircularMotion() {
        RADIUS LABEL
     ===================================================== */
 
-    const radiusAngle =
-        state.theta;
-
-
     const radiusLabelX =
         centerX +
-        radius *
-        0.55 *
-        Math.cos(
-            radiusAngle
-        );
-
+        circularX * 0.55;
 
     const radiusLabelY =
-        centerY -
-        radius *
-        0.55 *
-        Math.sin(
-            radiusAngle
-        );
+        centerY +
+        circularY * 0.55;
 
 
     circularCtx.save();
@@ -1824,20 +1470,16 @@ function drawCircularMotion() {
     ===================================================== */
 
     /*
-       The SHM comes from the Y-component.
+       THIS IS THE IMPORTANT PART.
 
-       Therefore draw a horizontal projection
-       from the particle to the Y-axis.
-
-              particle ●
-                       |
-                       |
-                       ●
-                     Y-axis
-
-       The vertical coordinate represents:
+       The SHM is generated from the
+       vertical Y-component:
 
            y = A sin θ
+
+       A horizontal dashed line projects
+       the circular particle onto the
+       vertical Y-axis.
     */
 
     if (
@@ -1879,7 +1521,7 @@ function drawCircularMotion() {
 
 
         /* -------------------------------------------------
-           Y-component point on Y-axis
+           Projected Y point
         ------------------------------------------------- */
 
         circularCtx.save();
@@ -1900,7 +1542,6 @@ function drawCircularMotion() {
 
         circularCtx.fill();
 
-
         circularCtx.restore();
 
 
@@ -1920,7 +1561,7 @@ function drawCircularMotion() {
 
 
         /* -------------------------------------------------
-           Y label
+           Y displacement label
         ------------------------------------------------- */
 
         circularCtx.save();
@@ -1935,10 +1576,23 @@ function drawCircularMotion() {
             "left";
 
 
-        const yLabelY =
-            centerY -
-            state.y *
-            0.5;
+        let yLabelY =
+            (
+                centerY +
+                particleY
+            ) / 2;
+
+
+        if (
+            Math.abs(
+                state.y
+            ) < 15
+        ) {
+
+            yLabelY =
+                centerY - 10;
+
+        }
 
 
         circularCtx.fillText(
@@ -1989,28 +1643,31 @@ function drawCircularMotion() {
         radius > 20
     ) {
 
+        const displayTheta =
+            getDisplayTheta();
+
+
         circularCtx.save();
 
         circularCtx.beginPath();
 
-        /*
-           Canvas angle is inverted vertically.
 
-           The physical angle is θ,
-           while canvas coordinates use
-           negative Y.
+        /*
+           Canvas Y direction is downward,
+           therefore physical positive θ
+           is represented using -θ.
         */
 
         circularCtx.arc(
             centerX,
             centerY,
             Math.min(
-                35,
+                38,
                 radius * 0.35
             ),
             0,
-            -state.theta,
-            state.theta > 0
+            -displayTheta,
+            false
         );
 
 
@@ -2026,7 +1683,7 @@ function drawCircularMotion() {
 
 
         /* -------------------------------------------------
-           θ label
+           Angle label
         ------------------------------------------------- */
 
         circularCtx.save();
@@ -2043,10 +1700,10 @@ function drawCircularMotion() {
 
         circularCtx.fillText(
             `θ = ${formatAngle(
-                state.theta
+                displayTheta
             )}`,
-            centerX + 45,
-            centerY - 20
+            centerX + 48,
+            centerY - 22
         );
 
 
@@ -2073,7 +1730,7 @@ function drawCircularMotion() {
 
     circularCtx.fillText(
         "x",
-        size - 8,
+        circularWidth - 8,
         centerY - 8
     );
 
@@ -2084,7 +1741,7 @@ function drawCircularMotion() {
     circularCtx.fillText(
         "y",
         centerX + 15,
-        15
+        16
     );
 
 
@@ -2112,6 +1769,41 @@ function drawCircularMotion() {
         22
     );
 
+    circularCtx.restore();
+
+
+    /* =====================================================
+       PHYSICS INFORMATION
+    ===================================================== */
+
+    circularCtx.save();
+
+    circularCtx.fillStyle =
+        "#475569";
+
+    circularCtx.font =
+        "12px Arial";
+
+    circularCtx.textAlign =
+        "left";
+
+
+    circularCtx.fillText(
+        `R = A = ${formatNumber(
+            state.amplitude,
+            0
+        )}`,
+        10,
+        circularHeight - 30
+    );
+
+
+    circularCtx.fillText(
+        `y = A sin(θ)`,
+        10,
+        circularHeight - 12
+    );
+
 
     circularCtx.restore();
 
@@ -2119,33 +1811,18 @@ function drawCircularMotion() {
 
 
 /* =========================================================
-   28. DRAW SHM REPRESENTATION
+   22. DRAW SHM MOTION DIAGRAM
 ========================================================= */
 
 function drawSHM() {
 
     if (
-        !shmCanvas ||
         !shmCtx ||
-        shmSize <= 0
+        shmWidth <= 0 ||
+        shmHeight <= 0
     ) {
         return;
     }
-
-
-    const size =
-        shmSize;
-
-
-    const centerX =
-        size / 2;
-
-    const centerY =
-        size / 2;
-
-
-    const amplitude =
-        getAmplitudePixels();
 
 
     /* -----------------------------------------------------
@@ -2154,28 +1831,37 @@ function drawSHM() {
 
     clearCanvas(
         shmCtx,
-        size,
-        size
+        shmWidth,
+        shmHeight
     );
 
 
     /* -----------------------------------------------------
-       Grid
+       Centre
 
-       SAME GRID SYSTEM as circular motion.
+       x-axis is exactly at 50% height.
     ----------------------------------------------------- */
+
+    const centerX =
+        shmWidth / 2;
+
+    const centerY =
+        shmHeight / 2;
+
+
+    /* =====================================================
+       GRID
+    ===================================================== */
 
     drawGrid(
         shmCtx,
-        size,
-        size,
-        centerX,
-        centerY
+        shmWidth,
+        shmHeight
     );
 
 
     /* =====================================================
-       X-AXIS
+       AXES
     ===================================================== */
 
     shmCtx.save();
@@ -2187,6 +1873,10 @@ function drawSHM() {
         2;
 
 
+    /*
+       Horizontal x-axis
+    */
+
     shmCtx.beginPath();
 
     shmCtx.moveTo(
@@ -2195,16 +1885,16 @@ function drawSHM() {
     );
 
     shmCtx.lineTo(
-        size,
+        shmWidth,
         centerY
     );
 
     shmCtx.stroke();
 
 
-    /* =====================================================
-       Y-AXIS
-    ===================================================== */
+    /*
+       Vertical y-axis
+    */
 
     shmCtx.beginPath();
 
@@ -2215,7 +1905,7 @@ function drawSHM() {
 
     shmCtx.lineTo(
         centerX,
-        size
+        shmHeight
     );
 
     shmCtx.stroke();
@@ -2225,89 +1915,48 @@ function drawSHM() {
 
 
     /* =====================================================
-       SHM EQUILIBRIUM LINE
-    ===================================================== */
-
-    shmCtx.save();
-
-    shmCtx.setLineDash([
-        7,
-        5
-    ]);
-
-    shmCtx.strokeStyle =
-        "#94a3b8";
-
-    shmCtx.lineWidth =
-        1.5;
-
-
-    shmCtx.beginPath();
-
-    shmCtx.moveTo(
-        0,
-        centerY
-    );
-
-    shmCtx.lineTo(
-        size,
-        centerY
-    );
-
-    shmCtx.stroke();
-
-
-    shmCtx.setLineDash([]);
-
-    shmCtx.restore();
-
-
-    /* =====================================================
-       SHM POSITION LINE
+       SHM AMPLITUDE SCALE
     ===================================================== */
 
     /*
-       A vertical representation is used.
+       Use the same visual scaling concept
+       as the circular motion.
 
-       The current displacement is:
-
-           y = A sin θ
-
-       Therefore the moving point moves
-       vertically.
+       This means increasing A visibly
+       increases the SHM range.
     */
 
-    const particleY =
-        centerY -
-        state.y;
+    const maxRadius =
+        Math.min(
+            shmWidth,
+            shmHeight
+        ) * 0.42;
 
 
-    /* -----------------------------------------------------
-       Current displacement arrow
-    ----------------------------------------------------- */
+    const shmScale =
+        state.amplitude !== 0
+            ? maxRadius /
+              state.amplitude
+            : 1;
 
-    drawArrow(
-        shmCtx,
-        centerX,
-        centerY,
-        centerX,
-        particleY,
-        "#16a34a",
-        3
-    );
+
+    const visualAmplitude =
+        state.amplitude *
+        shmScale;
 
 
     /* =====================================================
-       MAXIMUM AMPLITUDE MARKERS
+       +A LINE
     ===================================================== */
 
     const topY =
         centerY -
-        amplitude;
+        visualAmplitude;
+
 
     const bottomY =
         centerY +
-        amplitude;
+        visualAmplitude;
 
 
     shmCtx.save();
@@ -2319,19 +1968,15 @@ function drawSHM() {
         2;
 
 
-    /*
-       +A marker
-    */
-
     shmCtx.beginPath();
 
     shmCtx.moveTo(
-        centerX - 12,
+        centerX - 14,
         topY
     );
 
     shmCtx.lineTo(
-        centerX + 12,
+        centerX + 14,
         topY
     );
 
@@ -2339,18 +1984,18 @@ function drawSHM() {
 
 
     /*
-       -A marker
+       -A line
     */
 
     shmCtx.beginPath();
 
     shmCtx.moveTo(
-        centerX - 12,
+        centerX - 14,
         bottomY
     );
 
     shmCtx.lineTo(
-        centerX + 12,
+        centerX + 14,
         bottomY
     );
 
@@ -2361,7 +2006,7 @@ function drawSHM() {
 
 
     /* =====================================================
-       LIVE AMPLITUDE LABELS
+       +A / -A LABELS
     ===================================================== */
 
     shmCtx.save();
@@ -2380,9 +2025,9 @@ function drawSHM() {
         `+A = ${formatNumber(
             state.amplitude,
             0
-        )} px`,
-        centerX + 18,
-        topY + 4
+        )}`,
+        centerX + 20,
+        topY + 5
     );
 
 
@@ -2390,13 +2035,44 @@ function drawSHM() {
         `−A = ${formatNumber(
             state.amplitude,
             0
-        )} px`,
-        centerX + 18,
-        bottomY + 4
+        )}`,
+        centerX + 20,
+        bottomY + 5
     );
 
 
     shmCtx.restore();
+
+
+    /* =====================================================
+       CURRENT SHM POSITION
+    ===================================================== */
+
+    /*
+       Use exactly the same Y-component:
+
+           y = A sin(ωt)
+    */
+
+    const currentY =
+        centerY -
+        state.y *
+        shmScale;
+
+
+    /* =====================================================
+       CURRENT DISPLACEMENT ARROW
+    ===================================================== */
+
+    drawArrow(
+        shmCtx,
+        centerX,
+        centerY,
+        centerX,
+        currentY,
+        "#16a34a",
+        3
+    );
 
 
     /* =====================================================
@@ -2409,7 +2085,7 @@ function drawSHM() {
 
     shmCtx.arc(
         centerX,
-        particleY,
+        currentY,
         8,
         0,
         TWO_PI
@@ -2434,7 +2110,7 @@ function drawSHM() {
 
 
     /* =====================================================
-       CURRENT Y VALUE
+       CURRENT y LABEL
     ===================================================== */
 
     shmCtx.save();
@@ -2449,41 +2125,28 @@ function drawSHM() {
         "left";
 
 
+    let currentLabelY =
+        currentY - 12;
+
+
+    if (
+        currentLabelY <
+        40
+    ) {
+
+        currentLabelY =
+            currentY + 22;
+
+    }
+
+
     shmCtx.fillText(
         `y = ${formatNumber(
             state.y,
             1
-        )} px`,
-        centerX + 18,
-        particleY - 10
-    );
-
-
-    shmCtx.restore();
-
-
-    /* =====================================================
-       PHASE INFORMATION
-    ===================================================== */
-
-    shmCtx.save();
-
-    shmCtx.fillStyle =
-        "#7c3aed";
-
-    shmCtx.font =
-        "bold 13px Arial";
-
-    shmCtx.textAlign =
-        "center";
-
-
-    shmCtx.fillText(
-        `θ = ${formatAngle(
-            state.theta
         )}`,
-        centerX,
-        size - 22
+        centerX + 18,
+        currentLabelY
     );
 
 
@@ -2534,7 +2197,7 @@ function drawSHM() {
 
     shmCtx.fillText(
         "x",
-        size - 8,
+        shmWidth - 8,
         centerY - 8
     );
 
@@ -2545,7 +2208,7 @@ function drawSHM() {
     shmCtx.fillText(
         "y",
         centerX + 15,
-        15
+        16
     );
 
 
@@ -2553,68 +2216,25 @@ function drawSHM() {
 
 
     /* =====================================================
-       DIRECTION INDICATOR
+       TITLE
     ===================================================== */
-
-    let directionText;
-
-
-    /*
-       dy/dt = Aω cos θ
-
-       Therefore:
-
-       cos θ > 0 → moving upward
-       cos θ < 0 → moving downward
-    */
-
-    const velocitySign =
-        Math.cos(
-            state.theta
-        );
-
-
-    if (
-        Math.abs(
-            velocitySign
-        ) < 0.01
-    ) {
-
-        directionText =
-            "Turning point";
-
-    } else if (
-        velocitySign > 0
-    ) {
-
-        directionText =
-            "Moving upward";
-
-    } else {
-
-        directionText =
-            "Moving downward";
-
-    }
-
 
     shmCtx.save();
 
     shmCtx.fillStyle =
-        "#475569";
+        "#172033";
 
     shmCtx.font =
-        "12px Arial";
+        "bold 15px Arial";
 
     shmCtx.textAlign =
         "center";
 
     shmCtx.fillText(
-        directionText,
+        "Simple Harmonic Motion",
         centerX,
-        size - 7
+        shmHeight - 12
     );
-
 
     shmCtx.restore();
 
@@ -2622,7 +2242,243 @@ function drawSHM() {
 
 
 /* =========================================================
-   29. DRAW GRAPH GRID
+   23. DRAW ALL MOTION DIAGRAMS
+========================================================= */
+
+function drawMotionDiagrams() {
+
+    drawCircularMotion();
+
+    drawSHM();
+
+}
+
+
+/* =========================================================
+   END OF PART 2
+========================================================= */
+
+/* =========================================================
+   PART 3 — DISPLACEMENT-TIME GRAPH
+========================================================= */
+
+
+/* =========================================================
+   24. GRAPH AREA
+========================================================= */
+
+function getGraphArea() {
+
+    /*
+       Leave space for:
+       - title
+       - y-axis labels
+       - x-axis labels
+    */
+
+    const left =
+        55;
+
+    const right =
+        graphWidth - 20;
+
+    const top =
+        45;
+
+    const bottom =
+        graphHeight - 45;
+
+
+    return {
+
+        left: left,
+
+        right: right,
+
+        top: top,
+
+        bottom: bottom,
+
+        width:
+            right - left,
+
+        height:
+            bottom - top,
+
+        /*
+           ZERO LINE
+
+           Exactly halfway vertically.
+        */
+
+        zeroY:
+            top +
+            (
+                bottom - top
+            ) / 2
+
+    };
+
+}
+
+
+/* =========================================================
+   25. GRAPH VISUAL AMPLITUDE
+========================================================= */
+
+function getGraphVisualAmplitude(
+    area
+) {
+
+    /*
+       IMPORTANT:
+
+       The graph must visibly change height
+       when A changes.
+
+       Therefore the amplitude is mapped
+       directly into the available graph height.
+    */
+
+    const maximumVisualAmplitude =
+        area.height * 0.40;
+
+
+    const amplitudeRange =
+        MAX_AMPLITUDE -
+        MIN_AMPLITUDE;
+
+
+    if (
+        amplitudeRange <= 0
+    ) {
+
+        return maximumVisualAmplitude;
+
+    }
+
+
+    /*
+       Normalize A between 0 and 1.
+    */
+
+    const normalized =
+        (
+            state.amplitude -
+            MIN_AMPLITUDE
+        ) /
+        amplitudeRange;
+
+
+    /*
+       Keep some minimum visible height.
+    */
+
+    const minimumVisualAmplitude =
+        area.height * 0.15;
+
+
+    return (
+        minimumVisualAmplitude +
+        normalized *
+        (
+            maximumVisualAmplitude -
+            minimumVisualAmplitude
+        )
+    );
+
+}
+
+
+/* =========================================================
+   26. CONVERT TIME → GRAPH X
+========================================================= */
+
+function timeToGraphX(
+    time,
+    area,
+    duration
+) {
+
+    if (
+        duration <= 0
+    ) {
+
+        return area.left;
+
+    }
+
+
+    /*
+       Clamp time to graph range.
+
+       This prevents the graph point from
+       leaving the graph.
+    */
+
+    const normalized =
+        Math.max(
+            0,
+            Math.min(
+                1,
+                time / duration
+            )
+        );
+
+
+    return (
+        area.left +
+        normalized *
+        area.width
+    );
+
+}
+
+
+/* =========================================================
+   27. CONVERT DISPLACEMENT → GRAPH Y
+========================================================= */
+
+function displacementToGraphY(
+    displacement,
+    area,
+    visualAmplitude
+) {
+
+    /*
+       Normalize:
+
+           displacement / A
+    */
+
+    const normalized =
+        state.amplitude !== 0
+            ? displacement /
+              state.amplitude
+            : 0;
+
+
+    /*
+       Screen Y is inverted.
+
+       Positive displacement
+       goes UP.
+
+       Negative displacement
+       goes DOWN.
+    */
+
+    return (
+        area.zeroY -
+        normalized *
+        visualAmplitude
+    );
+
+}
+
+
+/* =========================================================
+   28. DRAW GRAPH GRID
 ========================================================= */
 
 function drawGraphGrid(
@@ -2639,95 +2495,492 @@ function drawGraphGrid(
     ctx.save();
 
     ctx.strokeStyle =
-        "#e2e8f0";
+        "#e5e7eb";
 
     ctx.lineWidth =
         1;
 
 
-    /* -----------------------------------------------------
-       Horizontal grid
+    /*
+       Vertical grid.
 
-       Always symmetric around y = 0.
-    ----------------------------------------------------- */
+       Use the same spacing concept
+       as the circular-motion grid.
+    */
 
-    const horizontalLines =
-        4;
-
-
-    const maxVisualAmplitude =
-        Math.min(
-            area.height * 0.40,
-            area.zeroY -
-            area.top -
-            10,
-            area.bottom -
-            area.zeroY -
-            10
+    const verticalSpacing =
+        Math.max(
+            25,
+            area.width /
+            (
+                GRAPH_PERIODS *
+                4
+            )
         );
 
 
     for (
-        let i = -2;
-        i <= 2;
+        let x = area.left;
+        x <= area.right;
+        x += verticalSpacing
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x,
+            area.top
+        );
+
+        ctx.lineTo(
+            x,
+            area.bottom
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    /*
+       Horizontal grid.
+
+       Use GRID_SIZE where possible.
+    */
+
+    const horizontalSpacing =
+        GRID_SIZE;
+
+
+    for (
+        let y =
+            area.zeroY;
+        y <= area.bottom;
+        y += horizontalSpacing
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            area.left,
+            y
+        );
+
+        ctx.lineTo(
+            area.right,
+            y
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    for (
+        let y =
+            area.zeroY -
+            horizontalSpacing;
+        y >= area.top;
+        y -= horizontalSpacing
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            area.left,
+            y
+        );
+
+        ctx.lineTo(
+            area.right,
+            y
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   29. DRAW GRAPH AXES
+========================================================= */
+
+function drawGraphAxes(
+    ctx,
+    area
+) {
+
+    if (!ctx) {
+        return;
+    }
+
+
+    ctx.save();
+
+    ctx.strokeStyle =
+        "#475569";
+
+    ctx.lineWidth =
+        2;
+
+
+    /*
+       Horizontal axis.
+
+       THIS IS THE SHM EQUILIBRIUM AXIS.
+    */
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        area.left,
+        area.zeroY
+    );
+
+    ctx.lineTo(
+        area.right,
+        area.zeroY
+    );
+
+    ctx.stroke();
+
+
+    /*
+       Vertical axis.
+    */
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        area.left,
+        area.top
+    );
+
+    ctx.lineTo(
+        area.left,
+        area.bottom
+    );
+
+    ctx.stroke();
+
+
+    /*
+       Arrow on x-axis.
+    */
+
+    drawArrow(
+        ctx,
+        area.left,
+        area.zeroY,
+        area.right,
+        area.zeroY,
+        "#475569",
+        2
+    );
+
+
+    /*
+       Arrow on y-axis.
+    */
+
+    drawArrow(
+        ctx,
+        area.left,
+        area.zeroY,
+        area.left,
+        area.top,
+        "#475569",
+        2
+    );
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   30. DRAW SINE WAVE
+========================================================= */
+
+function drawGraphWave(
+    ctx,
+    area,
+    duration,
+    visualAmplitude
+) {
+
+    if (!ctx) {
+        return;
+    }
+
+
+    /*
+       Number of samples.
+
+       More samples = smoother sine wave.
+    */
+
+    const samples =
+        Math.max(
+            500,
+            Math.floor(
+                area.width * 2
+            )
+        );
+
+
+    ctx.save();
+
+    ctx.beginPath();
+
+
+    for (
+        let i = 0;
+        i <= samples;
         i++
     ) {
 
-        const y =
-            area.zeroY -
+        /*
+           Time across the graph.
+
+           The graph always covers:
+
+               0 → GRAPH_PERIODS × T
+        */
+
+        const time =
             (
-                i / 2
+                i /
+                samples
             ) *
-            maxVisualAmplitude;
+            duration;
+
+
+        /*
+           THE SAME SHM EQUATION:
+
+               y = A sin(ωt)
+        */
+
+        const displacement =
+            getSHMDisplacement(
+                time
+            );
+
+
+        /*
+           Convert to screen coordinates.
+        */
+
+        const x =
+            timeToGraphX(
+                time,
+                area,
+                duration
+            );
+
+
+        const y =
+            displacementToGraphY(
+                displacement,
+                area,
+                visualAmplitude
+            );
 
 
         if (
-            y >= area.top &&
-            y <= area.bottom
+            i === 0
         ) {
 
-            ctx.beginPath();
-
             ctx.moveTo(
-                area.left,
+                x,
                 y
             );
+
+        } else {
 
             ctx.lineTo(
-                area.right,
+                x,
                 y
             );
-
-            ctx.stroke();
 
         }
 
     }
 
 
-    /* -----------------------------------------------------
-       Vertical grid
+    /*
+       Wave appearance.
+    */
 
-       Exactly 2 complete periods.
-    ----------------------------------------------------- */
+    ctx.strokeStyle =
+        "#2563eb";
 
-    const verticalDivisions =
-        GRAPH_PERIODS * 4;
+    ctx.lineWidth =
+        3;
 
+    ctx.lineJoin =
+        "round";
+
+    ctx.lineCap =
+        "round";
+
+    ctx.stroke();
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   31. DRAW GRAPH AMPLITUDE LABELS
+========================================================= */
+
+function drawGraphAmplitudeLabels(
+    ctx,
+    area,
+    visualAmplitude
+) {
+
+    if (!ctx) {
+        return;
+    }
+
+
+    const positiveY =
+        area.zeroY -
+        visualAmplitude;
+
+
+    const negativeY =
+        area.zeroY +
+        visualAmplitude;
+
+
+    ctx.save();
+
+
+    /*
+       +A
+    */
+
+    ctx.fillStyle =
+        "#dc2626";
+
+    ctx.font =
+        "bold 12px Arial";
+
+    ctx.textAlign =
+        "right";
+
+
+    ctx.fillText(
+        `+A = ${formatNumber(
+            state.amplitude,
+            0
+        )}`,
+        area.left - 7,
+        positiveY + 4
+    );
+
+
+    /*
+       0
+    */
+
+    ctx.fillStyle =
+        "#475569";
+
+    ctx.fillText(
+        "0",
+        area.left - 7,
+        area.zeroY + 4
+    );
+
+
+    /*
+       -A
+    */
+
+    ctx.fillStyle =
+        "#dc2626";
+
+    ctx.fillText(
+        `−A = ${formatNumber(
+            state.amplitude,
+            0
+        )}`,
+        area.left - 7,
+        negativeY + 4
+    );
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   32. DRAW PERIOD MARKERS
+========================================================= */
+
+function drawGraphPeriodMarkers(
+    ctx,
+    area,
+    duration
+) {
+
+    if (!ctx) {
+        return;
+    }
+
+
+    ctx.save();
+
+    ctx.strokeStyle =
+        "#94a3b8";
+
+    ctx.lineWidth =
+        1;
+
+    ctx.setLineDash([
+        4,
+        5
+    ]);
+
+
+    /*
+       Draw vertical lines at:
+
+           0
+           T
+           2T
+           3T...
+    */
 
     for (
         let i = 0;
-        i <= verticalDivisions;
+        i <= GRAPH_PERIODS;
         i++
     ) {
 
+        const time =
+            i *
+            state.period;
+
+
         const x =
-            area.left +
-            (
-                i /
-                verticalDivisions
-            ) *
-            area.width;
+            timeToGraphX(
+                time,
+                area,
+                duration
+            );
 
 
         ctx.beginPath();
@@ -2747,359 +3000,78 @@ function drawGraphGrid(
     }
 
 
-    ctx.restore();
-
-}
-
-
-/* =========================================================
-   30. DRAW GRAPH AXES
-========================================================= */
-
-function drawGraphAxes(
-    ctx,
-    area
-) {
-
-    if (!ctx) {
-        return;
-    }
-
-
-    ctx.save();
-
-    ctx.strokeStyle =
-        "#64748b";
-
-    ctx.lineWidth =
-        2;
-
-
-    /*
-       IMPORTANT:
-
-       Graph x-axis is EXACTLY at:
-
-           graphHeight / 2
-
-       This is the same relative position
-       as the circular-motion x-axis:
-
-           circularSize / 2
-    */
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        area.left,
-        area.zeroY
-    );
-
-    ctx.lineTo(
-        area.right,
-        area.zeroY
-    );
-
-    ctx.stroke();
-
-
-    /* -----------------------------------------------------
-       Vertical axis
-    ----------------------------------------------------- */
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        area.left,
-        area.top
-    );
-
-    ctx.lineTo(
-        area.left,
-        area.bottom
-    );
-
-    ctx.stroke();
-
+    ctx.setLineDash([]);
 
     ctx.restore();
 
-}
-
-
-/* =========================================================
-   31. DRAW GRAPH AMPLITUDE SCALE
-========================================================= */
-
-function getGraphVisualAmplitude(
-    area
-) {
-
-    const maximum =
-        Math.min(
-            area.height * 0.40,
-            area.zeroY -
-            area.top -
-            10,
-            area.bottom -
-            area.zeroY -
-            10
-        );
-
 
     /*
-       Map slider amplitude to visual height.
-
-       Current slider:
-
-           50 → 150
-
-       Low A:
-           smaller wave
-
-       High A:
-           taller wave
+       Period labels.
     */
-
-    const ratio =
-        (
-            state.amplitude -
-            MIN_AMPLITUDE
-        ) /
-        (
-            MAX_AMPLITUDE -
-            MIN_AMPLITUDE
-        );
-
-
-    const clampedRatio =
-        Math.max(
-            0,
-            Math.min(
-                1,
-                ratio
-            )
-        );
-
-
-    /*
-       Keep a small visible amplitude
-       even at minimum slider value.
-    */
-
-    return (
-        maximum *
-        (
-            0.30 +
-            0.70 *
-            clampedRatio
-        )
-    );
-
-}
-
-
-/* =========================================================
-   32. DRAW GRAPH AMPLITUDE LABELS
-========================================================= */
-
-function drawGraphAmplitudeLabels(
-    ctx,
-    area,
-    visualAmplitude
-) {
-
-    if (!ctx) {
-        return;
-    }
-
-
-    const plusY =
-        area.zeroY -
-        visualAmplitude;
-
-
-    const minusY =
-        area.zeroY +
-        visualAmplitude;
-
 
     ctx.save();
 
     ctx.fillStyle =
-        "#475569";
+        "#64748b";
 
     ctx.font =
-        "bold 12px Arial";
+        "bold 11px Arial";
 
     ctx.textAlign =
-        "right";
-
-
-    /*
-       LIVE +A VALUE
-    */
-
-    ctx.fillText(
-        `+A = ${formatNumber(
-            state.amplitude,
-            0
-        )} px`,
-        area.left - 8,
-        plusY + 4
-    );
-
-
-    /*
-       ZERO
-    */
-
-    ctx.fillText(
-        "0",
-        area.left - 8,
-        area.zeroY + 4
-    );
-
-
-    /*
-       LIVE -A VALUE
-    */
-
-    ctx.fillText(
-        `−A = ${formatNumber(
-            state.amplitude,
-            0
-        )} px`,
-        area.left - 8,
-        minusY + 4
-    );
-
-
-    ctx.restore();
-
-}
-
-
-/* =========================================================
-   33. DRAW GRAPH SINE WAVE
-========================================================= */
-
-function drawGraphWave(
-    ctx,
-    area,
-    duration,
-    visualAmplitude
-) {
-
-    if (!ctx) {
-        return;
-    }
-
-
-    const samples =
-        1000;
-
-
-    ctx.save();
-
-    ctx.beginPath();
+        "center";
 
 
     for (
         let i = 0;
-        i <= samples;
+        i <= GRAPH_PERIODS;
         i++
     ) {
 
-        const t =
-            (
-                i /
-                samples
-            ) *
-            duration;
+        const time =
+            i *
+            state.period;
 
 
-        /*
-           PHYSICS EQUATION
-
-               y = A sin(ωt)
-        */
-
-        const displacement =
-            getGraphY(
-                t
-            );
-
-
-        /*
-           Convert physical displacement
-           into normalized value:
-
-               y / A
-
-           → range -1 to +1.
-        */
-
-        const normalized =
-            state.amplitude !== 0
-                ? displacement /
-                  state.amplitude
-                : 0;
-
-
-        /*
-           Visual amplitude changes with
-           the amplitude slider.
-        */
-
-        const screenY =
-            area.zeroY -
-            normalized *
-            visualAmplitude;
-
-
-        const screenX =
+        const x =
             timeToGraphX(
-                t,
+                time,
                 area,
                 duration
             );
+
+
+        let label;
 
 
         if (
             i === 0
         ) {
 
-            ctx.moveTo(
-                screenX,
-                screenY
-            );
+            label =
+                "0";
+
+        } else if (
+            i === 1
+        ) {
+
+            label =
+                "T";
 
         } else {
 
-            ctx.lineTo(
-                screenX,
-                screenY
-            );
+            label =
+                `${i}T`;
 
         }
 
+
+        ctx.fillText(
+            label,
+            x,
+            area.top - 8
+        );
+
     }
-
-
-    ctx.strokeStyle =
-        "#2563eb";
-
-    ctx.lineWidth =
-        3;
-
-    ctx.lineCap =
-        "round";
-
-    ctx.lineJoin =
-        "round";
-
-    ctx.stroke();
 
 
     ctx.restore();
@@ -3108,16 +3080,7 @@ function drawGraphWave(
 
 
 /* =========================================================
-   END OF PART 2
-========================================================= */
-
-/* =========================================================
-   PART 3 — DISPLACEMENT-TIME GRAPH
-========================================================= */
-
-
-/* =========================================================
-   34. DRAW CURRENT GRAPH POINT
+   33. DRAW CURRENT GRAPH POINT
 ========================================================= */
 
 function drawGraphCurrentPoint(
@@ -3133,13 +3096,26 @@ function drawGraphCurrentPoint(
 
 
     /*
-       Keep the displayed graph time inside
-       the visible graph interval.
+       Current time must wrap around the
+       displayed graph duration.
+
+       This guarantees the point always
+       remains ON the displayed graph.
     */
 
-    const graphTime =
+    let graphTime =
         state.time %
         duration;
+
+
+    if (
+        graphTime < 0
+    ) {
+
+        graphTime +=
+            duration;
+
+    }
 
 
     /*
@@ -3155,43 +3131,33 @@ function drawGraphCurrentPoint(
 
 
     /*
-       Current displacement.
+       IMPORTANT:
+
+       Use the SAME equation as the wave.
 
            y = A sin(ωt)
-
-       This is EXACTLY the same Y-component
-       used by the circular motion.
     */
 
     const currentDisplacement =
-        state.y;
+        getSHMDisplacement(
+            state.time
+        );
 
 
     /*
-       Normalize displacement:
-
-           y / A
-    */
-
-    const normalized =
-        state.amplitude !== 0
-            ? currentDisplacement /
-              state.amplitude
-            : 0;
-
-
-    /*
-       Convert to screen coordinate.
+       Current graph Y.
     */
 
     const currentY =
-        area.zeroY -
-        normalized *
-        visualAmplitude;
+        displacementToGraphY(
+            currentDisplacement,
+            area,
+            visualAmplitude
+        );
 
 
     /* =====================================================
-       VERTICAL TIME INDICATOR
+       VERTICAL TIME LINE
     ===================================================== */
 
     ctx.save();
@@ -3252,7 +3218,6 @@ function drawGraphCurrentPoint(
     ctx.lineWidth =
         2;
 
-
     ctx.setLineDash([
         4,
         3
@@ -3266,7 +3231,7 @@ function drawGraphCurrentPoint(
 
 
     /* =====================================================
-       CURRENT GRAPH POINT
+       CURRENT POINT
     ===================================================== */
 
     ctx.save();
@@ -3300,7 +3265,7 @@ function drawGraphCurrentPoint(
 
 
     /* =====================================================
-       CURRENT y VALUE
+       CURRENT y LABEL
     ===================================================== */
 
     ctx.save();
@@ -3319,18 +3284,13 @@ function drawGraphCurrentPoint(
         currentY - 12;
 
 
-    /*
-       Prevent label from leaving
-       the top of the graph.
-    */
-
     if (
         labelY <
-        area.top + 14
+        area.top + 15
     ) {
 
         labelY =
-            currentY + 22;
+            currentY + 20;
 
     }
 
@@ -3339,7 +3299,7 @@ function drawGraphCurrentPoint(
         `y = ${formatNumber(
             currentDisplacement,
             1
-        )} px`,
+        )}`,
         currentX,
         labelY
     );
@@ -3351,236 +3311,7 @@ function drawGraphCurrentPoint(
 
 
 /* =========================================================
-   35. DRAW GRAPH TIME LABELS
-========================================================= */
-
-function drawGraphTimeLabels(
-    ctx,
-    area,
-    duration
-) {
-
-    if (!ctx) {
-        return;
-    }
-
-
-    ctx.save();
-
-    ctx.fillStyle =
-        "#475569";
-
-    ctx.font =
-        "12px Arial";
-
-    ctx.textAlign =
-        "center";
-
-
-    /*
-       Because the graph shows exactly
-       GRAPH_PERIODS complete periods,
-       label every half period.
-    */
-
-    const numberOfIntervals =
-        GRAPH_PERIODS * 2;
-
-
-    for (
-        let i = 0;
-        i <= numberOfIntervals;
-        i++
-    ) {
-
-        const t =
-            (
-                i /
-                numberOfIntervals
-            ) *
-            duration;
-
-
-        const x =
-            timeToGraphX(
-                t,
-                area,
-                duration
-            );
-
-
-        ctx.fillText(
-            `${formatNumber(
-                t,
-                2
-            )} s`,
-            x,
-            area.bottom + 18
-        );
-
-    }
-
-
-    ctx.restore();
-
-}
-
-
-/* =========================================================
-   36. DRAW GRAPH PERIOD MARKERS
-========================================================= */
-
-function drawGraphPeriodMarkers(
-    ctx,
-    area,
-    duration
-) {
-
-    if (!ctx) {
-        return;
-    }
-
-
-    ctx.save();
-
-    ctx.strokeStyle =
-        "#94a3b8";
-
-    ctx.lineWidth =
-        1;
-
-
-    ctx.setLineDash([
-        3,
-        5
-    ]);
-
-
-    /*
-       Mark each complete period.
-
-           0
-           T
-           2T
-    */
-
-    for (
-        let i = 0;
-        i <= GRAPH_PERIODS;
-        i++
-    ) {
-
-        const t =
-            i *
-            state.period;
-
-
-        const x =
-            timeToGraphX(
-                t,
-                area,
-                duration
-            );
-
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            x,
-            area.top
-        );
-
-        ctx.lineTo(
-            x,
-            area.bottom
-        );
-
-        ctx.stroke();
-
-    }
-
-
-    ctx.setLineDash([]);
-
-    ctx.restore();
-
-
-    /* =====================================================
-       T LABELS
-    ===================================================== */
-
-    ctx.save();
-
-    ctx.fillStyle =
-        "#64748b";
-
-    ctx.font =
-        "bold 11px Arial";
-
-    ctx.textAlign =
-        "center";
-
-
-    for (
-        let i = 0;
-        i <= GRAPH_PERIODS;
-        i++
-    ) {
-
-        const t =
-            i *
-            state.period;
-
-
-        const x =
-            timeToGraphX(
-                t,
-                area,
-                duration
-            );
-
-
-        let label;
-
-
-        if (
-            i === 0
-        ) {
-
-            label =
-                "0";
-
-        } else if (
-            i === 1
-        ) {
-
-            label =
-                "T";
-
-        } else {
-
-            label =
-                `${i}T`;
-
-        }
-
-
-        ctx.fillText(
-            label,
-            x,
-            area.top - 8
-        );
-
-    }
-
-
-    ctx.restore();
-
-}
-
-
-/* =========================================================
-   37. DRAW GRAPH TITLE AND EQUATION
+   34. DRAW GRAPH LABELS
 ========================================================= */
 
 function drawGraphLabels(
@@ -3596,15 +3327,15 @@ function drawGraphLabels(
     ctx.save();
 
 
-    /* -----------------------------------------------------
+    /*
        Equation
-    ----------------------------------------------------- */
+    */
 
     ctx.fillStyle =
         "#2563eb";
 
     ctx.font =
-        "bold 14px Arial";
+        "bold 15px Arial";
 
     ctx.textAlign =
         "left";
@@ -3613,13 +3344,13 @@ function drawGraphLabels(
     ctx.fillText(
         "y = A sin(ωt)",
         area.left + 8,
-        area.top + 16
+        area.top + 18
     );
 
 
-    /* -----------------------------------------------------
-       Live A
-    ----------------------------------------------------- */
+    /*
+       Live amplitude
+    */
 
     ctx.fillStyle =
         "#dc2626";
@@ -3635,15 +3366,15 @@ function drawGraphLabels(
         `A = ${formatNumber(
             state.amplitude,
             0
-        )} px`,
+        )}`,
         area.right,
-        area.top + 15
+        area.top + 17
     );
 
 
-    /* -----------------------------------------------------
+    /*
        Frequency
-    ----------------------------------------------------- */
+    */
 
     ctx.fillStyle =
         "#475569";
@@ -3658,13 +3389,13 @@ function drawGraphLabels(
             2
         )} Hz`,
         area.right,
-        area.top + 30
+        area.top + 33
     );
 
 
-    /* -----------------------------------------------------
+    /*
        Period
-    ----------------------------------------------------- */
+    */
 
     ctx.fillText(
         `T = ${formatNumber(
@@ -3672,13 +3403,13 @@ function drawGraphLabels(
             2
         )} s`,
         area.right,
-        area.top + 45
+        area.top + 49
     );
 
 
-    /* -----------------------------------------------------
-       X-axis title
-    ----------------------------------------------------- */
+    /*
+       x-axis label
+    */
 
     ctx.fillStyle =
         "#172033";
@@ -3696,16 +3427,15 @@ function drawGraphLabels(
             area.left +
             area.right
         ) / 2,
-        area.bottom + 37
+        area.bottom + 35
     );
 
 
-    /* -----------------------------------------------------
-       Y-axis title
-    ----------------------------------------------------- */
+    /*
+       y-axis label
+    */
 
     ctx.save();
-
 
     ctx.translate(
         15,
@@ -3737,13 +3467,94 @@ function drawGraphLabels(
 
 
 /* =========================================================
-   38. DRAW COMPLETE GRAPH
+   35. DRAW TIME LABELS
+========================================================= */
+
+function drawGraphTimeLabels(
+    ctx,
+    area,
+    duration
+) {
+
+    if (!ctx) {
+        return;
+    }
+
+
+    ctx.save();
+
+    ctx.fillStyle =
+        "#64748b";
+
+    ctx.font =
+        "11px Arial";
+
+    ctx.textAlign =
+        "center";
+
+
+    /*
+       Half-period intervals.
+
+       This makes the graph easier to read:
+
+           0
+           T/2
+           T
+           3T/2
+           2T
+    */
+
+    const intervals =
+        GRAPH_PERIODS * 2;
+
+
+    for (
+        let i = 0;
+        i <= intervals;
+        i++
+    ) {
+
+        const time =
+            (
+                i /
+                intervals
+            ) *
+            duration;
+
+
+        const x =
+            timeToGraphX(
+                time,
+                area,
+                duration
+            );
+
+
+        ctx.fillText(
+            `${formatNumber(
+                time,
+                2
+            )} s`,
+            x,
+            area.bottom + 18
+        );
+
+    }
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   36. DRAW COMPLETE GRAPH
 ========================================================= */
 
 function drawGraph() {
 
     if (
-        !graphCanvas ||
         !graphCtx ||
         graphWidth <= 0 ||
         graphHeight <= 0
@@ -3754,9 +3565,9 @@ function drawGraph() {
     }
 
 
-    /* =====================================================
-       CLEAR
-    ===================================================== */
+    /*
+       Clear.
+    */
 
     clearCanvas(
         graphCtx,
@@ -3765,38 +3576,28 @@ function drawGraph() {
     );
 
 
-    /* =====================================================
-       GRAPH AREA
-    ===================================================== */
+    /*
+       Get graph dimensions.
+    */
 
     const area =
         getGraphArea();
 
 
-    /* =====================================================
-       COMPLETE PERIOD DURATION
-    ===================================================== */
+    /*
+       EXACTLY complete periods.
+    */
 
     const duration =
         getGraphDuration();
 
 
     /*
-       Safety check.
+       Visual amplitude.
+
+       This changes whenever the
+       amplitude slider changes.
     */
-
-    if (
-        duration <= 0
-    ) {
-
-        return;
-
-    }
-
-
-    /* =====================================================
-       CURRENT VISUAL AMPLITUDE
-    ===================================================== */
 
     const visualAmplitude =
         getGraphVisualAmplitude(
@@ -3804,9 +3605,9 @@ function drawGraph() {
         );
 
 
-    /* =====================================================
-       GRID
-    ===================================================== */
+    /* -----------------------------------------------------
+       Grid
+    ----------------------------------------------------- */
 
     drawGraphGrid(
         graphCtx,
@@ -3815,9 +3616,9 @@ function drawGraph() {
     );
 
 
-    /* =====================================================
-       AXES
-    ===================================================== */
+    /* -----------------------------------------------------
+       Axes
+    ----------------------------------------------------- */
 
     drawGraphAxes(
         graphCtx,
@@ -3825,9 +3626,9 @@ function drawGraph() {
     );
 
 
-    /* =====================================================
-       PERIOD MARKERS
-    ===================================================== */
+    /* -----------------------------------------------------
+       Period markers
+    ----------------------------------------------------- */
 
     drawGraphPeriodMarkers(
         graphCtx,
@@ -3836,9 +3637,9 @@ function drawGraph() {
     );
 
 
-    /* =====================================================
-       SINE WAVE
-    ===================================================== */
+    /* -----------------------------------------------------
+       Sine wave
+    ----------------------------------------------------- */
 
     drawGraphWave(
         graphCtx,
@@ -3848,9 +3649,9 @@ function drawGraph() {
     );
 
 
-    /* =====================================================
-       LIVE GRAPH POINT
-    ===================================================== */
+    /* -----------------------------------------------------
+       Current point
+    ----------------------------------------------------- */
 
     drawGraphCurrentPoint(
         graphCtx,
@@ -3860,9 +3661,9 @@ function drawGraph() {
     );
 
 
-    /* =====================================================
-       LIVE AMPLITUDE ON Y-AXIS
-    ===================================================== */
+    /* -----------------------------------------------------
+       +A / -A labels
+    ----------------------------------------------------- */
 
     drawGraphAmplitudeLabels(
         graphCtx,
@@ -3871,9 +3672,9 @@ function drawGraph() {
     );
 
 
-    /* =====================================================
-       GRAPH LABELS
-    ===================================================== */
+    /* -----------------------------------------------------
+       Labels
+    ----------------------------------------------------- */
 
     drawGraphLabels(
         graphCtx,
@@ -3881,9 +3682,9 @@ function drawGraph() {
     );
 
 
-    /* =====================================================
-       TIME LABELS
-    ===================================================== */
+    /* -----------------------------------------------------
+       Time labels
+    ----------------------------------------------------- */
 
     drawGraphTimeLabels(
         graphCtx,
@@ -3895,68 +3696,19 @@ function drawGraph() {
 
 
 /* =========================================================
-   39. CHECK GRAPH / CIRCULAR AXIS ALIGNMENT
-========================================================= */
-
-function getAxisAlignmentRatio() {
-
-    /*
-       Circular x-axis:
-
-           circularSize / 2
-    */
-
-    const circularAxisRatio =
-        circularSize > 0
-            ? 0.5
-            : 0;
-
-
-    /*
-       Graph x-axis:
-
-           graphHeight / 2
-    */
-
-    const graphAxisRatio =
-        graphHeight > 0
-            ? 0.5
-            : 0;
-
-
-    return {
-
-        circular:
-            circularAxisRatio,
-
-        graph:
-            graphAxisRatio,
-
-        aligned:
-            Math.abs(
-                circularAxisRatio -
-                graphAxisRatio
-            ) < 0.001
-
-    };
-
-}
-
-
-/* =========================================================
    END OF PART 3
 ========================================================= */
 
 /* =========================================================
-   PART 4 — CONTROLS + ANIMATION + INITIALIZATION
+   PART 4 — ANIMATION, CONTROLS & INITIALIZATION
 ========================================================= */
 
 
 /* =========================================================
-   40. UPDATE SIMULATION
+   37. UPDATE PHYSICS
 ========================================================= */
 
-function updateSimulation(
+function updatePhysics(
     deltaTime
 ) {
 
@@ -3970,9 +3722,9 @@ function updateSimulation(
 
 
     /*
-       Advance simulation time.
+       Advance time.
 
-           θ = ωt
+           t = t + Δt
     */
 
     state.time +=
@@ -3980,18 +3732,25 @@ function updateSimulation(
 
 
     /*
-       Prevent unnecessarily large
-       time values.
+       Keep time manageable.
+
+       We wrap after the graph duration
+       because the graph itself contains
+       a fixed number of complete periods.
     */
 
+    const duration =
+        getGraphDuration();
+
+
     if (
-        state.period > 0 &&
-        state.time > 100000
+        duration > 0 &&
+        state.time >= duration
     ) {
 
         state.time =
             state.time %
-            state.period;
+            duration;
 
     }
 
@@ -4001,16 +3760,54 @@ function updateSimulation(
 
            θ = ωt
 
-           y = A sin(θ)
+           x = A cos θ
+
+           y = A sin θ
     */
 
-    calculateSHM();
+    calculateMotion();
 
 }
 
 
 /* =========================================================
-   41. ANIMATION LOOP
+   38. DRAW EVERYTHING
+========================================================= */
+
+function drawAll() {
+
+    /*
+       Circular motion
+    */
+
+    drawCircularMotion();
+
+
+    /*
+       SHM motion
+    */
+
+    drawSHM();
+
+
+    /*
+       Displacement-time graph
+    */
+
+    drawGraph();
+
+
+    /*
+       Numerical displays
+    */
+
+    updateDisplays();
+
+}
+
+
+/* =========================================================
+   39. ANIMATION LOOP
 ========================================================= */
 
 function animationLoop(
@@ -4018,7 +3815,7 @@ function animationLoop(
 ) {
 
     /*
-       First frame.
+       First frame after starting.
     */
 
     if (
@@ -4048,8 +3845,8 @@ function animationLoop(
 
 
     /*
-       Prevent a huge jump if the
-       browser was temporarily inactive.
+       Avoid a huge jump if the browser
+       temporarily stops rendering.
     */
 
     deltaTime =
@@ -4060,28 +3857,20 @@ function animationLoop(
 
 
     /*
-       Update physics.
+       Physics update.
     */
 
-    updateSimulation(
+    updatePhysics(
         deltaTime
     );
 
 
     /*
-       Redraw everything.
+       Redraw.
 
-       This keeps:
-
-       Circular motion
-              ↓
-       Y-component
-              ↓
-       SHM
-              ↓
-       Graph point
-
-       synchronized.
+       All three visualizations are
+       therefore updated from the same
+       state.time.
     */
 
     drawAll();
@@ -4100,7 +3889,7 @@ function animationLoop(
 
 
 /* =========================================================
-   42. START ANIMATION
+   40. START ANIMATION
 ========================================================= */
 
 function startAnimation() {
@@ -4127,7 +3916,7 @@ function startAnimation() {
 
 
 /* =========================================================
-   43. PLAY / PAUSE
+   41. PLAY / PAUSE
 ========================================================= */
 
 function togglePlay() {
@@ -4137,8 +3926,8 @@ function togglePlay() {
 
 
     /*
-       Reset timestamp when starting
-       to prevent a large time jump.
+       Prevent a large time jump when
+       Play is pressed after being paused.
     */
 
     if (
@@ -4157,7 +3946,7 @@ function togglePlay() {
 
 
 /* =========================================================
-   44. UPDATE PLAY BUTTON
+   42. UPDATE PLAY BUTTON
 ========================================================= */
 
 function updatePlayButton() {
@@ -4221,13 +4010,13 @@ function updatePlayButton() {
 
 
 /* =========================================================
-   45. RESET SIMULATION
+   43. RESET
 ========================================================= */
 
 function resetSimulation() {
 
     /*
-       Stop animation.
+       Pause.
     */
 
     state.playing =
@@ -4235,38 +4024,39 @@ function resetSimulation() {
 
 
     /*
-       Reset phase/time.
+       Reset to t = 0.
 
-           t = 0
+       Therefore:
 
            θ = 0
 
-           y = A sin(0) = 0
+           x = A
 
-           x = A cos(0) = A
+           y = 0
     */
 
     state.time =
         0;
+
 
     state.theta =
         0;
 
 
     /*
-       Keep current amplitude and frequency
-       slider settings.
+       Re-read current slider values.
+
+       This means Reset does NOT change the
+       user's chosen amplitude/frequency.
     */
 
     readControls();
 
 
-    calculateSHM();
+    calculateMotion();
 
 
     updatePlayButton();
-
-    updateDisplays();
 
     drawAll();
 
@@ -4274,7 +4064,7 @@ function resetSimulation() {
 
 
 /* =========================================================
-   46. AMPLITUDE SLIDER
+   44. AMPLITUDE INPUT
 ========================================================= */
 
 function handleAmplitudeInput() {
@@ -4304,11 +4094,7 @@ function handleAmplitudeInput() {
 
 
     /*
-       Update amplitude immediately.
-
-           R = A
-
-           y = A sin(ωt)
+       Update A immediately.
     */
 
     state.amplitude =
@@ -4322,21 +4108,27 @@ function handleAmplitudeInput() {
 
 
     /*
-       IMPORTANT:
+       Recalculate the same phase
+       with the new amplitude.
 
-       Amplitude changes must immediately
-       update the entire simulation.
+       Thus:
 
-       Circular radius
-       SHM amplitude
-       Graph height
-       +A / -A labels
-       Current graph point
+           x = A cos θ
+
+           y = A sin θ
     */
 
-    calculateSHM();
+    calculateMotion();
 
-    updateDisplays();
+
+    /*
+       Redraw immediately.
+
+       This is important.
+
+       The graph height changes while
+       the slider is being dragged.
+    */
 
     drawAll();
 
@@ -4344,7 +4136,7 @@ function handleAmplitudeInput() {
 
 
 /* =========================================================
-   47. FREQUENCY SLIDER
+   45. FREQUENCY INPUT
 ========================================================= */
 
 function handleFrequencyInput() {
@@ -4412,17 +4204,21 @@ function handleFrequencyInput() {
 
 
     /*
-       Keep the CURRENT time.
+       Keep the current time.
 
-       Therefore the current phase changes
-       naturally according to:
+       The phase therefore changes naturally:
 
            θ = ωt
     */
 
-    calculateSHM();
+    calculateMotion();
 
-    updateDisplays();
+
+    /*
+       The graph duration changes automatically:
+
+           duration = GRAPH_PERIODS × T
+    */
 
     drawAll();
 
@@ -4430,7 +4226,7 @@ function handleFrequencyInput() {
 
 
 /* =========================================================
-   48. Y COMPONENT TOGGLE
+   46. Y-COMPONENT TOGGLE
 ========================================================= */
 
 function handleYComponentToggle() {
@@ -4451,14 +4247,14 @@ function handleYComponentToggle() {
 
 
 /* =========================================================
-   49. SETUP CONTROLS
+   47. SETUP CONTROLS
 ========================================================= */
 
 function setupControls() {
 
-    /* -----------------------------------------------------
+    /*
        PLAY
-    ----------------------------------------------------- */
+    */
 
     if (
         playButton
@@ -4472,9 +4268,9 @@ function setupControls() {
     }
 
 
-    /* -----------------------------------------------------
+    /*
        RESET
-    ----------------------------------------------------- */
+    */
 
     if (
         resetButton
@@ -4488,12 +4284,13 @@ function setupControls() {
     }
 
 
-    /* -----------------------------------------------------
+    /*
        AMPLITUDE
 
-       "input" makes the graph respond
+       "input" is used instead of only
+       "change" so the graph responds
        continuously while dragging.
-    ----------------------------------------------------- */
+    */
 
     if (
         amplitudeSlider
@@ -4513,9 +4310,9 @@ function setupControls() {
     }
 
 
-    /* -----------------------------------------------------
+    /*
        FREQUENCY
-    ----------------------------------------------------- */
+    */
 
     if (
         frequencySlider
@@ -4535,9 +4332,9 @@ function setupControls() {
     }
 
 
-    /* -----------------------------------------------------
+    /*
        Y COMPONENT
-    ----------------------------------------------------- */
+    */
 
     if (
         yComponentToggle
@@ -4551,34 +4348,30 @@ function setupControls() {
     }
 
 
-    /* =====================================================
-       KEYBOARD SHORTCUTS
-    ===================================================== */
+    /*
+       KEYBOARD CONTROLS
+
+       SPACE = Play/Pause
+       R     = Reset
+    */
 
     document.addEventListener(
         "keydown",
         function(event) {
 
-            const active =
+            const activeElement =
                 document.activeElement;
 
-
             const tag =
-                active
-                    ? active.tagName
+                activeElement
+                    ? activeElement.tagName
                     : "";
 
 
-            /*
-               SPACE = Play / Pause
-            */
-
             if (
-                event.code ===
-                "Space" &&
+                event.code === "Space" &&
                 tag !== "INPUT" &&
-                tag !== "TEXTAREA" &&
-                tag !== "BUTTON"
+                tag !== "TEXTAREA"
             ) {
 
                 event.preventDefault();
@@ -4587,10 +4380,6 @@ function setupControls() {
 
             }
 
-
-            /*
-               R = Reset
-            */
 
             if (
                 (
@@ -4612,113 +4401,7 @@ function setupControls() {
 
 
 /* =========================================================
-   50. COLLAPSIBLE PANEL FUNCTION
-========================================================= */
-
-function setupCollapsiblePanel(
-    toggle,
-    content,
-    arrow
-) {
-
-    if (
-        !toggle ||
-        !content
-    ) {
-
-        return;
-
-    }
-
-
-    toggle.addEventListener(
-        "click",
-        function() {
-
-            const isOpen =
-                content.classList.contains(
-                    "open"
-                );
-
-
-            if (
-                isOpen
-            ) {
-
-                content.classList.remove(
-                    "open"
-                );
-
-
-                toggle.setAttribute(
-                    "aria-expanded",
-                    "false"
-                );
-
-
-                if (
-                    arrow
-                ) {
-
-                    arrow.textContent =
-                        "▼";
-
-                }
-
-            } else {
-
-                content.classList.add(
-                    "open"
-                );
-
-
-                toggle.setAttribute(
-                    "aria-expanded",
-                    "true"
-                );
-
-
-                if (
-                    arrow
-                ) {
-
-                    arrow.textContent =
-                        "▲";
-
-                }
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   51. SETUP PANELS
-========================================================= */
-
-function setupPanels() {
-
-    setupCollapsiblePanel(
-        formulaToggle,
-        formulaContent,
-        formulaArrow
-    );
-
-
-    setupCollapsiblePanel(
-        conceptToggle,
-        conceptContent,
-        conceptArrow
-    );
-
-}
-
-
-/* =========================================================
-   52. WINDOW RESIZE
+   48. RESIZE HANDLER
 ========================================================= */
 
 let resizeTimer =
@@ -4736,7 +4419,7 @@ function handleResize() {
         setTimeout(
             function() {
 
-                resizeAll();
+                resizeAllCanvases();
 
             },
             100
@@ -4745,6 +4428,10 @@ function handleResize() {
 }
 
 
+/* =========================================================
+   49. WINDOW RESIZE
+========================================================= */
+
 window.addEventListener(
     "resize",
     handleResize
@@ -4752,7 +4439,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   53. VISIBILITY CHANGE
+   50. PAGE VISIBILITY
 ========================================================= */
 
 document.addEventListener(
@@ -4760,9 +4447,9 @@ document.addEventListener(
     function() {
 
         /*
-           If browser pauses the page,
-           restart timing cleanly when
-           animation resumes.
+           If the browser stops updating the
+           page, reset the timestamp so that
+           the next frame does not jump forward.
         */
 
         if (
@@ -4779,36 +4466,20 @@ document.addEventListener(
 
 
 /* =========================================================
-   54. INITIALIZE STATE
+   51. INITIALIZE STATE
 ========================================================= */
 
 function initializeState() {
 
     /*
-       Read HTML slider values.
+       Read initial slider values.
     */
 
     readControls();
 
 
     /*
-       Read Y-component checkbox.
-    */
-
-    if (
-        yComponentToggle
-    ) {
-
-        state.showYComponent =
-            yComponentToggle.checked;
-
-    }
-
-
-    /*
-       Start at:
-
-           t = 0
+       Initial position:
 
            θ = 0
 
@@ -4824,31 +4495,55 @@ function initializeState() {
         0;
 
 
-    calculateSHM();
+    calculateMotion();
 
 
     updateDisplays();
-
-    updatePlayButton();
 
 }
 
 
 /* =========================================================
-   55. INITIALIZE SIMULATION
+   52. INITIALIZE SIMULATION
 ========================================================= */
 
 function initializeSimulation() {
 
+    /*
+       1. Read initial values
+    */
+
     initializeState();
+
+
+    /*
+       2. Connect buttons/sliders
+    */
 
     setupControls();
 
-    setupPanels();
 
-    resizeAll();
+    /*
+       3. Set canvas sizes
+    */
+
+    resizeAllCanvases();
+
+
+    /*
+       4. Draw initial frame
+    */
 
     drawAll();
+
+
+    /*
+       5. Start animation engine
+
+       The simulation starts paused,
+       but the animation loop keeps
+       rendering the current state.
+    */
 
     startAnimation();
 
@@ -4856,7 +4551,7 @@ function initializeSimulation() {
 
 
 /* =========================================================
-   56. DOM READY
+   53. DOM READY
 ========================================================= */
 
 if (
@@ -4877,5 +4572,5 @@ if (
 
 
 /* =========================================================
-   END OF COMPLETE SCRIPT.JS
+   END OF NEW CLEAN SCRIPT.JS
 ========================================================= */
