@@ -1566,18 +1566,554 @@ function drawSHM() {
 
 function drawGraph() {
 
-  const size =
-    getCanvasSize(graphCanvas);
+  const size = getCanvasSize(graphCanvas);
 
   const width = size.width;
   const height = size.height;
 
-  graphCtx.clearRect(
+  graphCtx.clearRect(0, 0, width, height);
+
+  /* =====================================================
+     GRAPH AREA
+  ===================================================== */
+
+  const left = 50;
+  const right = width - 20;
+  const top = 25;
+  const bottom = height - 40;
+
+  const graphWidth = right - left;
+  const graphHeight = bottom - top;
+
+  const centreY =
+    top + graphHeight / 2;
+
+
+  /* =====================================================
+     BACKGROUND
+  ===================================================== */
+
+  graphCtx.fillStyle = "#ffffff";
+
+  graphCtx.fillRect(
     0,
     0,
     width,
     height
   );
+
+
+  /* =====================================================
+     VERTICAL SCALE
+     
+     Amplitude directly controls
+     the height of the sine wave.
+  ===================================================== */
+
+  const maxGraphAmplitude =
+    graphHeight * 0.40;
+
+  const amplitudeScale =
+    maxGraphAmplitude /
+    state.amplitude;
+
+
+  /* =====================================================
+     TIME WINDOW
+     
+     ALWAYS SHOW 2 COMPLETE PERIODS.
+
+     Therefore:
+     
+     higher frequency
+       → smaller period
+       → more compressed graph
+
+     lower frequency
+       → larger period
+       → wider graph
+  ===================================================== */
+
+  const visibleTime =
+    2 * state.period;
+
+
+  /* =====================================================
+     GRID
+  ===================================================== */
+
+  graphCtx.strokeStyle =
+    "#e2e8f0";
+
+  graphCtx.lineWidth = 1;
+
+
+  /* Horizontal grid */
+
+  for (let i = 0; i <= 4; i++) {
+
+    const y =
+      top +
+      i *
+      graphHeight /
+      4;
+
+    graphCtx.beginPath();
+
+    graphCtx.moveTo(
+      left,
+      y
+    );
+
+    graphCtx.lineTo(
+      right,
+      y
+    );
+
+    graphCtx.stroke();
+
+  }
+
+
+  /* Vertical grid */
+
+  for (let i = 0; i <= 8; i++) {
+
+    const x =
+      left +
+      i *
+      graphWidth /
+      8;
+
+    graphCtx.beginPath();
+
+    graphCtx.moveTo(
+      x,
+      top
+    );
+
+    graphCtx.lineTo(
+      x,
+      bottom
+    );
+
+    graphCtx.stroke();
+
+  }
+
+
+  /* =====================================================
+     AXES
+  ===================================================== */
+
+  graphCtx.strokeStyle =
+    "#64748b";
+
+  graphCtx.lineWidth = 1.5;
+
+
+  /* X axis */
+
+  graphCtx.beginPath();
+
+  graphCtx.moveTo(
+    left,
+    centreY
+  );
+
+  graphCtx.lineTo(
+    right,
+    centreY
+  );
+
+  graphCtx.stroke();
+
+
+  /* Y axis */
+
+  graphCtx.beginPath();
+
+  graphCtx.moveTo(
+    left,
+    top
+  );
+
+  graphCtx.lineTo(
+    left,
+    bottom
+  );
+
+  graphCtx.stroke();
+
+
+  /* =====================================================
+     AMPLITUDE LABELS
+  ===================================================== */
+
+  graphCtx.fillStyle =
+    "#475569";
+
+  graphCtx.font =
+    "12px Arial";
+
+  graphCtx.textAlign =
+    "right";
+
+
+  graphCtx.fillText(
+    `+${formatNumber(state.amplitude, 0)}`,
+    left - 7,
+    centreY -
+      maxGraphAmplitude +
+      4
+  );
+
+
+  graphCtx.fillText(
+    "0",
+    left - 7,
+    centreY + 4
+  );
+
+
+  graphCtx.fillText(
+    `-${formatNumber(state.amplitude, 0)}`,
+    left - 7,
+    centreY +
+      maxGraphAmplitude +
+      4
+  );
+
+
+  /* =====================================================
+     SINUSOIDAL CURVE
+     
+     SAME PHYSICS EQUATION AS THE CIRCLE:
+
+          y = A sin(ωt)
+  ===================================================== */
+
+  graphCtx.beginPath();
+
+  const samples = 600;
+
+
+  for (
+    let i = 0;
+    i <= samples;
+    i++
+  ) {
+
+    /*
+       Convert horizontal position
+       into actual physical time.
+    */
+
+    const t =
+      (i / samples) *
+      visibleTime;
+
+
+    /*
+       SAME equation used by
+       circular motion:
+
+          y = A sin(ωt)
+    */
+
+    const y =
+      state.amplitude *
+      Math.sin(
+        state.omega * t
+      );
+
+
+    /*
+       Convert physical displacement
+       to screen position.
+    */
+
+    const screenY =
+      centreY -
+      y * amplitudeScale;
+
+
+    const x =
+      left +
+      (t / visibleTime) *
+      graphWidth;
+
+
+    if (i === 0) {
+
+      graphCtx.moveTo(
+        x,
+        screenY
+      );
+
+    } else {
+
+      graphCtx.lineTo(
+        x,
+        screenY
+      );
+
+    }
+
+  }
+
+
+  /* =====================================================
+     DRAW SINE CURVE
+  ===================================================== */
+
+  graphCtx.strokeStyle =
+    "#2563eb";
+
+  graphCtx.lineWidth = 3;
+
+  graphCtx.stroke();
+
+
+  /* =====================================================
+     CURRENT TIME
+     
+     The red dot corresponds to the
+     SAME y value as the circular particle.
+  ===================================================== */
+
+  const currentTime =
+    state.time % visibleTime;
+
+
+  const currentX =
+    left +
+    (currentTime / visibleTime) *
+    graphWidth;
+
+
+  const currentY =
+    centreY -
+    state.y *
+    amplitudeScale;
+
+
+  /* Current-time vertical line */
+
+  graphCtx.beginPath();
+
+  graphCtx.moveTo(
+    currentX,
+    top
+  );
+
+  graphCtx.lineTo(
+    currentX,
+    bottom
+  );
+
+  graphCtx.strokeStyle =
+    "#f59e0b";
+
+  graphCtx.lineWidth = 1.5;
+
+  graphCtx.setLineDash([
+    5,
+    4
+  ]);
+
+  graphCtx.stroke();
+
+  graphCtx.setLineDash([]);
+
+
+  /* Current point */
+
+  graphCtx.beginPath();
+
+  graphCtx.arc(
+    currentX,
+    currentY,
+    7,
+    0,
+    Math.PI * 2
+  );
+
+  graphCtx.fillStyle =
+    "#dc2626";
+
+  graphCtx.fill();
+
+  graphCtx.strokeStyle =
+    "#ffffff";
+
+  graphCtx.lineWidth = 2;
+
+  graphCtx.stroke();
+
+
+  /* =====================================================
+     PERIOD MARKERS
+  ===================================================== */
+
+  graphCtx.fillStyle =
+    "#475569";
+
+  graphCtx.font =
+    "12px Arial";
+
+  graphCtx.textAlign =
+    "center";
+
+
+  /*
+     Mark:
+
+        0
+        T/2
+        T
+        3T/2
+        2T
+  */
+
+  for (
+    let i = 0;
+    i <= 4;
+    i++
+  ) {
+
+    const t =
+      i *
+      state.period /
+      2;
+
+
+    const x =
+      left +
+      (t / visibleTime) *
+      graphWidth;
+
+
+    graphCtx.fillText(
+      `${formatNumber(t, 2)} s`,
+      x,
+      bottom + 18
+    );
+
+
+    /*
+       Small tick
+    */
+
+    graphCtx.beginPath();
+
+    graphCtx.moveTo(
+      x,
+      centreY - 5
+    );
+
+    graphCtx.lineTo(
+      x,
+      centreY + 5
+    );
+
+    graphCtx.strokeStyle =
+      "#64748b";
+
+    graphCtx.lineWidth = 1;
+
+    graphCtx.stroke();
+
+  }
+
+
+  /* =====================================================
+     AXIS TITLES
+  ===================================================== */
+
+  graphCtx.fillStyle =
+    "#172033";
+
+  graphCtx.font =
+    "bold 13px Arial";
+
+  graphCtx.textAlign =
+    "center";
+
+
+  graphCtx.fillText(
+    "time, t",
+    width / 2,
+    height - 7
+  );
+
+
+  graphCtx.save();
+
+  graphCtx.translate(
+    14,
+    height / 2
+  );
+
+  graphCtx.rotate(
+    -Math.PI / 2
+  );
+
+  graphCtx.fillText(
+    "displacement, y",
+    0,
+    0
+  );
+
+  graphCtx.restore();
+
+
+  /* =====================================================
+     EQUATION
+  ===================================================== */
+
+  graphCtx.fillStyle =
+    "#2563eb";
+
+  graphCtx.font =
+    "bold 14px Arial";
+
+  graphCtx.textAlign =
+    "left";
+
+  graphCtx.fillText(
+    "y = A sin(ωt)",
+    left + 8,
+    top + 15
+  );
+
+
+  /* =====================================================
+     LIVE PARAMETERS
+  ===================================================== */
+
+  graphCtx.fillStyle =
+    "#475569";
+
+  graphCtx.font =
+    "12px Arial";
+
+  graphCtx.textAlign =
+    "right";
+
+  graphCtx.fillText(
+    `A = ${formatNumber(state.amplitude, 0)}`,
+    right,
+    top + 15
+  );
+
+  graphCtx.fillText(
+    `f = ${formatNumber(state.frequency, 2)} Hz`,
+    right,
+    top + 30
+  );
+
+}
 
 
   /* ---------------------------------------------------------
